@@ -189,13 +189,8 @@ class Report:
                 continue
             page = re.fullmatch(r'<page url="([^"]*)">(.*?)</page>', line)
             if page:
-                label, value = self.record("page", page[2])
-                known_pages = {
-                    "https://app.notion.com/p/3e3c6fba6efe80828c18d9b4ca6961e9": self.prefix + "index.html",
-                    "https://app.notion.com/p/3e5c6fba6efe8039b955c477fbebe2c3": self.prefix + "ru/index.html",
-                }
-                url = known_pages.get(page[1], safe_url(page[1]))
-                output.append(f'<p class="notion-page-link"><a {label} href="{url}">{value}</a></p>')
+                # Keep source-page references in the archival snapshot only.
+                # The public header already provides the language switch.
                 continue
             attachment = re.fullmatch(r'<file src="([^"]*)">(.*?)</file>', line)
             if attachment:
@@ -270,24 +265,21 @@ def render_chinese():
     report = Report(source, metadata)
     body = report.render()
     if 'class="source-unavailable"' in body:
-        migration_note = "以下保留 Notion 可读取的原文与结构。仍有未能转换的对象，已在原位置注明并保留入口。"
-    else:
-        migration_note = "以下保留 Notion 原文与结构；GitHub 链接及两份桌面 Excel 已按作者补充接入。"
+        raise ValueError("Chinese page still has unresolved source objects")
     nav = "".join(f'<a href="#{identifier}">{escape(label)}</a>' for identifier, label in report.nav)
-    source_url = safe_url(metadata["source_url"])
     return f'''<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="BIRD-Interact 四维框架设计与评测分析，中文 Notion 原文迁移版。">
+<meta name="description" content="BIRD-Interact 四维框架设计与评测分析。">
 <meta name="referrer" content="strict-origin-when-cross-origin"><title>BIRD-Interact 四维框架设计与评测分析 · Valibra</title>
 <link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/notion-report.css">
 <script src="assets/notion-report.js" defer></script></head><body class="notion-page">
 <a class="skip" href="#main">跳转到正文</a>
-<header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html">Valibra<span>.</span></a><div class="toplinks"><a class="repo-link" href="{source_url}">Notion 原文 ↗</a><nav class="language" aria-label="语言切换"><a href="index.html" lang="zh-CN" aria-current="page">中文</a><a href="ru/index.html" lang="ru" title="对应中文全文的俄语译版">Русский</a></nav></div></div></header>
-<div class="layout"><aside class="sidebar"><div class="overline">章节导航</div><nav aria-label="章节导航">{nav}</nav><div class="sidebar-note">中文：Notion 原文迁移<br>俄语：对应全文译版<br><br>本次读取：{escape(metadata['fetched_on'])}<br>不自动同步后续修改。</div></aside>
-<main id="main"><div class="migration-note"><strong>迁移说明（非原文）</strong>：{migration_note}正文中的本地路径仅作原文引用，不代表对应文件已公开。</div>
+<header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html">Valibra<span>.</span></a><div class="toplinks"><nav class="language" aria-label="语言切换"><a href="index.html" lang="zh-CN" aria-current="page">中文</a><a href="ru/index.html" lang="ru">Русский</a></nav></div></div></header>
+<div class="layout"><aside class="sidebar"><div class="overline">章节导航</div><nav aria-label="章节导航">{nav}</nav></aside>
+<main id="main">
 <div class="report-controls"><button class="subtle-button" data-report-toggle hidden>展开全部折叠内容</button></div>
 <article class="notion-report">{body}</article>
-<footer class="footer">网站排版与正文分开维护。<a href="{source_url}">查看 Notion 原文</a>；本站未改动 Notion 页面。俄语站为对应全文译版。</footer></main></div></body></html>
+</main></div></body></html>
 '''
 
 
@@ -319,7 +311,6 @@ def render_russian():
     if 'class="source-unavailable"' in body:
         raise ValueError("Russian page still has unresolved source objects")
     nav = "".join(f'<a href="#{identifier}">{escape(label)}</a>' for identifier, label in report.nav)
-    source_url = safe_url(metadata["source_url"])
     return f'''<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Полный русский перевод отчёта BIRD-Interact: четырёхкомпонентная система, реальные примеры и результаты оценки.">
@@ -327,10 +318,10 @@ def render_russian():
 <link rel="stylesheet" href="../assets/site.css"><link rel="stylesheet" href="../assets/notion-report.css">
 <script src="../assets/notion-report.js" defer></script></head><body class="notion-page">
 <a class="skip" href="#main">Перейти к содержимому</a>
-<header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html">Valibra<span>.</span></a><div class="toplinks"><a class="repo-link" href="{source_url}">Оригинал в Notion ↗</a><nav class="language" aria-label="Выбор языка"><a href="../index.html" lang="zh-CN">中文</a><a href="index.html" lang="ru" aria-current="page">Русский</a></nav></div></div></header>
-<div class="layout"><aside class="sidebar"><div class="overline">Содержание</div><nav aria-label="Содержание">{nav}</nav><div class="sidebar-note">Полный перевод китайского отчёта<br><br>Снимок источника: {escape(metadata['fetched_on'])}<br>Изменения Notion не синхронизируются автоматически.</div></aside>
-<main id="main"><div class="migration-note"><strong>Примечание к переводу (не часть оригинала)</strong>: сохранены порядок разделов, полные примеры, таблицы и вложенные блоки китайской страницы. Тексты схемы и пояснения на иллюстрациях переведены. SQL, технические идентификаторы, числовые значения и исходные англоязычные журналы сохранены; китайские комментарии и текст System Prompt переведены. Две таблицы Excel доступны в исходном виде. Локальные пути в тексте — ссылки на источники, а не опубликованные файлы. <a href="../index.html">Сверить с китайским оригиналом</a>.</div>
+<header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html">Valibra<span>.</span></a><div class="toplinks"><nav class="language" aria-label="Выбор языка"><a href="../index.html" lang="zh-CN">中文</a><a href="index.html" lang="ru" aria-current="page">Русский</a></nav></div></div></header>
+<div class="layout"><aside class="sidebar"><div class="overline">Содержание</div><nav aria-label="Содержание">{nav}</nav></aside>
+<main id="main">
 <div class="report-controls"><button class="subtle-button" data-report-toggle hidden>Развернуть все блоки</button></div>
 <article class="notion-report">{body}</article>
-<footer class="footer">Оформление сайта и текст отчёта хранятся отдельно. <a href="{source_url}">Китайский оригинал в Notion</a>. Страницы Notion не изменены; последующие правки требуют отдельной синхронизации перевода.</footer></main></div></body></html>
+</main></div></body></html>
 '''

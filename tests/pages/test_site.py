@@ -97,6 +97,26 @@ class PublicSiteTests(unittest.TestCase):
         self.assertEqual(counts["primary_full_pass"] + counts["fallback_new_full"], 75)
         self.assertEqual(sum(row["count"] for row in data["status_transitions"]), 600)
 
+    def test_public_pages_omit_migration_metadata_and_notion_links(self):
+        forbidden = ("迁移说明", "本次读取", "不自动同步", "Примечание к переводу",
+                     "Снимок источника", "синхронизируются автоматически",
+                     'class="migration-note"', 'class="sidebar-note"',
+                     'class="notion-page-link"', '<footer')
+        for filename in ("index.html", "ru/index.html"):
+            text = (self.output / filename).read_text()
+            for phrase in forbidden:
+                self.assertNotIn(phrase, text)
+            document = Document(text)
+            for link in document.links:
+                host = urlsplit(link).hostname or ""
+                self.assertFalse(host == "notion.com" or host.endswith(".notion.com")
+                                 or host == "notion.so" or host.endswith(".notion.so"), link)
+            self.assertIn("https://github.com/TianciGao/Valibra", document.links)
+            self.assertEqual(text.count(' download="'), 2)
+            self.assertIn('aria-label="章节导航"' if filename == "index.html" else 'aria-label="Содержание"', text)
+            self.assertIn('lang="zh-CN"', text)
+            self.assertIn('lang="ru"', text)
+
     def test_no_credentials_or_temporary_signed_urls(self):
         # User explicitly requested the report's SQL/state records verbatim.
         # Its original citations and local paths are text, not copied directories.

@@ -56,9 +56,9 @@ class NotionReportTests(unittest.TestCase):
         cls.body = cls.report.render()
         cls.dom = Extract(cls.body)
 
-    def test_all_1164_text_units_survive_in_order(self):
-        self.assertEqual(len(self.report.records), 1164)
-        self.assertEqual(list(self.dom.records), list(range(1164)))
+    def test_all_1163_text_units_survive_in_order(self):
+        self.assertEqual(len(self.report.records), 1163)
+        self.assertEqual(list(self.dom.records), list(range(1163)))
         for index, record in enumerate(self.report.records):
             self.assertEqual(self.dom.records[index], record["text"], f"Source block {index} ({record['kind']})")
 

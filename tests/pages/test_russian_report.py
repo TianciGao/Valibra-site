@@ -26,7 +26,7 @@ class RussianReportTests(unittest.TestCase):
 
     def test_all_source_units_and_nested_structure_have_counterparts(self):
         self.assertEqual(self.zh.counts, self.ru.counts)
-        self.assertEqual(len(self.ru.records), 1164)
+        self.assertEqual(len(self.ru.records), 1163)
         self.assertEqual([x["kind"] for x in self.zh.records], [x["kind"] for x in self.ru.records])
         zh, ru = Extract(self.zh_body), Extract(self.ru_body)
         self.assertEqual(zh.details, ru.details)
