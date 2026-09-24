@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1220" viewBox="0 0 1160 1220" role="img" aria-labelledby="title desc">
+  <title id="title">四维信息整理、Check 补查、Gate 重做与最终补救</title>
+  <desc id="desc">普通 Check 完成或未完成但无下一工具时进入 Gate；未完成且有合法工具时先补查。只有检查通过才进入正常 Main。重做在临时草稿中进行，失败回滚；主流程结束后，满足预算等条件才启动独立补救。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#52616d"/></marker>
+  </defs>
+  <style>
+    text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#26313d;font-size:20px}
+    .title{font-size:26px;font-weight:700}.bold{font-weight:700}.small{font-size:18px}.note{font-size:18px;fill:#52616d}
+    .box{fill:#f4f6f8;stroke:#83919c;stroke-width:1.5;rx:8}.plain{fill:white;stroke:#83919c;stroke-width:1.5;rx:8}
+    .edge{fill:none;stroke:#52616d;stroke-width:2;marker-end:url(#arrow)}
+  </style>
+  <rect width="1160" height="1220" fill="white"/>
+  <text x="40" y="37" class="title">总体流程：先查证和整理，再编写 SQL</text>
+
+  <rect class="box" x="295" y="63" width="570" height="68"/>
+  <text x="580" y="93" text-anchor="middle" class="bold">用户原请求 / P1 通过后的 P2 追问</text>
+  <text x="580" y="117" text-anchor="middle" class="small">用户澄清单独保存，后续阶段继续使用</text>
+  <path class="edge" d="M580 131 V166"/>
+
+  <rect class="box" x="55" y="166" width="1050" height="160"/>
+  <text x="80" y="199" class="bold">信息整理：按顺序形成四维信息</text>
+  <text x="85" y="236">Structure：表与连接关系</text>
+  <text x="410" y="236">Mapping：请求短语对应字段</text>
+  <text x="795" y="236">Knowledge：业务定义</text>
+  <path class="edge" d="M332 230 H390"/>
+  <path class="edge" d="M723 230 H777"/>
+  <text x="85" y="268" class="small">schema / DDL</text>
+  <text x="410" y="268" class="small">字段说明 / JSON 路径</text>
+  <text x="795" y="268" class="small">官方规则与公式</text>
+  <text x="85" y="306" class="small">四维：tables · join_keys · column_mapping · domain_knowledge</text>
+  <path class="edge" d="M580 326 V374"/>
+
+  <rect class="box" x="335" y="374" width="445" height="85"/>
+  <text x="558" y="407" text-anchor="middle" class="bold">Check：现有信息是否足以编写 SQL</text>
+  <text x="558" y="438" text-anchor="middle" class="small">字段、公式、筛选条件、输出要求</text>
+
+  <rect class="plain" x="887" y="374" width="218" height="128"/>
+  <text x="904" y="404" class="bold">申请一次补查</text>
+  <text x="904" y="434" class="small">字段 / 规则 / 只读 SQL</text>
+  <text x="904" y="462" class="small">或向用户澄清</text>
+  <text x="904" y="489" class="small">校验通过后执行</text>
+  <path class="edge" d="M780 417 H887"/>
+  <text x="790" y="385" class="small">未完成</text>
+  <text x="790" y="405" class="small">且有工具</text>
+  <path class="edge" d="M996 374 V347 H724 V374"/>
+  <text x="798" y="339" class="small">新结果 → 再 Check</text>
+
+  <path class="edge" d="M558 459 V550"/>
+  <text x="572" y="495" class="bold">完成，或未完成但无下一项工具</text>
+  <text x="572" y="524" class="small">complete 或 next_tool = null</text>
+
+  <rect class="box" x="335" y="550" width="445" height="112"/>
+  <text x="558" y="583" text-anchor="middle" class="bold">Gate：新证据是否要求重做信息</text>
+  <text x="558" y="615" text-anchor="middle" class="small">接收四维信息、Check 结果与缺口、澄清及证据</text>
+  <text x="558" y="643" text-anchor="middle" class="small">只决定重做范围，不代替 Check 宣布完成</text>
+
+  <path class="edge" d="M558 662 V703 H200 V755"/>
+  <path class="edge" d="M558 662 V703 H580 V755"/>
+  <path class="edge" d="M558 662 V703 H960 V755"/>
+  <text x="55" y="737" class="small">不重做 + Check 已完成</text>
+  <text x="432" y="737" class="small">重做字段，或重做表范围</text>
+  <text x="801" y="737" class="small">结束，或不重做但仍未完成</text>
+
+  <rect class="plain" x="45" y="755" width="310" height="170"/>
+  <text x="65" y="788" class="bold">正常 Main</text>
+  <text x="65" y="821" class="small">请求 + 四维摘要 + 澄清</text>
+  <text x="65" y="851" class="small">execute_sql / submit_sql</text>
+  <text x="65" y="881" class="small">编写、执行、修正与提交 SQL</text>
+  <text x="65" y="911" class="small">未完成任务 → 结束主流程</text>
+
+  <rect class="box" x="425" y="755" width="310" height="170"/>
+  <text x="445" y="788" class="bold">临时草稿：重做后再 Check</text>
+  <text x="445" y="821" class="small">字段：Mapping → Knowledge</text>
+  <text x="445" y="851" class="small">范围：先 Structure，再上述两步</text>
+  <text x="445" y="881" class="small">最后执行草稿 Check</text>
+  <text x="445" y="911" class="small">提交前不改变正式信息</text>
+
+  <rect class="plain" x="805" y="755" width="310" height="170"/>
+  <text x="825" y="788" class="bold">结束主流程</text>
+  <text x="825" y="821" class="small">不把未通过的整理结果</text>
+  <text x="825" y="851" class="small">直接交给正常 Main</text>
+  <text x="825" y="881" class="small">工具校验 / 预算限制也可能</text>
+  <text x="825" y="911" class="small">提前到达这一出口</text>
+
+  <path class="edge" d="M200 925 V980"/>
+  <rect class="plain" x="45" y="980" width="285" height="142"/>
+  <text x="65" y="1013" class="bold">官方评测与阶段转换</text>
+  <text x="65" y="1047" class="small">P1 通过 → 接收 P2 追问</text>
+  <text x="65" y="1077" class="small">P2 通过 → 任务完成</text>
+  <text x="65" y="1107" class="small">失败不自动算作补救成功</text>
+
+  <path class="edge" d="M580 925 V980"/>
+  <rect class="plain" x="370" y="980" width="400" height="187"/>
+  <text x="390" y="1013" class="bold">草稿 Check 的出口</text>
+  <text x="390" y="1047" class="small">通过：校验后提交 → 正常 Main</text>
+  <text x="390" y="1077" class="small">未完成：允许的补查 → 再 Check</text>
+  <text x="390" y="1107" class="small">无法继续：丢弃草稿 → 结束主流程</text>
+  <text x="390" y="1137" class="small">需提问：先丢弃，再问，经 Gate 建新草稿</text>
+
+  <path class="edge" d="M960 925 V980"/>
+  <rect class="box" x="805" y="980" width="310" height="217"/>
+  <text x="825" y="1013" class="bold">外层判断能否启动补救</text>
+  <text x="825" y="1047" class="small">功能已启用 + 任务未完成</text>
+  <text x="825" y="1077" class="small">余额 ≥ 3 Coin + 尚未补救</text>
+  <text x="825" y="1107" class="small">满足：独立原 Agent，恢复全部工具</text>
+  <text x="825" y="1137" class="small">不满足：返回已有结果</text>
+  <text x="825" y="1177" class="small">不重置预算，不返回四维主流程</text>
+</svg>
