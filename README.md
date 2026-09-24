@@ -1,28 +1,35 @@
 # Valibra GitHub Pages
 
-独立的中俄双语研究展示站点。沿用 Notion 的章节与折叠组织方式，但不是 Notion 的完整副本或自动同步镜像。
+独立的研究展示站点。中文按用户要求从 Notion 原文迁移，不再使用删减摘要；俄语页暂时保留上一版摘要。两者目前不是内容完全对应的翻译版本，也不自动同步 Notion。
 
 网站：<https://tiancigao.github.io/Valibra-site/> · [Русский](https://tiancigao.github.io/Valibra-site/ru/)
 
-本仓库仅包含网站源码及公开汇总材料，与私有研究仓库独立，没有导入其 Git 历史、Agent 代码或运行环境。
+本仓库包含网站源码、用户要求公开的中文报告正文和页面图片，以及既有俄语摘要与汇总材料。与私有研究仓库独立，没有导入其 Git 历史、Agent 实现代码或运行环境。
 
 ## 内容边界
 
-- `site/content/zh.html`、`site/content/ru.html`：公开正文，仅有框架说明、匿名化案例过程与汇总结果。
-- `site/assets/`：本地 CSS、JavaScript、框架 SVG；不依赖 Notion 临时链接或第三方 CDN。
+- `site/content/zh.notion.md`：中文 Notion 原文快照（2026-09-24 读取），正文、案例、SQL、模型响应及状态记录按原文保留；只将图片地址本地化、附件内部引用换成对应 Notion 入口。
+- `site/content/zh.notion.json`：来源和已知迁移限制。接口标记 `truncated=true`，有 1 个不可读取的嵌入对象；2 个 Excel 附件只保留原入口。网站明确标注这些限制，不宣称所有对象均已完整迁移。
+- `scripts/notion_report.py`：转换标题、彩色文字、提示框、表格、嵌套折叠和代码块，不调用模型重写内容。
+- `site/content/ru.html`：此前俄语摘要，本次未改写或重新翻译。
+- `site/assets/notion-zh-*`：从本次中文 Notion 页下载的 5 张原图，没有重新绘制或翻译；CSS、JavaScript 均本地提供。
 - 核心结果来源：`site/data/core_results.json`，摘自 2026-09-16 版本汇总。
-- 不发布 Notion 内部地址、原始 Prompt / 模型输出、逐题 SQL、参考答案、完整日志、数据集、数据库或凭据。
-- Notion 保持编辑母版。发布时手工更新两种语言，审阅差异后再推送；本站不持有 Notion Token。
+- 只公开该页面正文已包含的材料；不根据其中的文件路径递归复制私有仓库、完整日志目录、数据集、数据库或附件包。路径文字仅是原文引用。
+- 不保存或发布凭据、Notion Token、图片签名下载参数。
+- Notion 保持编辑母版。以后重新读取并核对差异，再手工更新网站；本次没有修改 Notion 页面。
 
 ## 本地构建与检查
 
 ```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python3 -m pip install -r requirements-site.txt
 python3 scripts/build_pages.py
 python3 -m unittest discover -s tests/pages -v
 python3 -m http.server 8080 --directory dist/pages
 ```
 
-打开 `http://localhost:8080/`。构建使用 Python 3.12 标准库；输出为静态 HTML，关闭 JavaScript 后正文、语言切换和折叠案例仍可用。
+打开 `http://localhost:8080/`。构建使用 Python 3.12 和固定版本的 Markdown 渲染依赖。输出为静态 HTML，关闭 JavaScript 后正文、语言切换和折叠案例仍可用。测试逐项核对 1,164 个文字单元、116 段代码、50 个折叠块、18 张表格和 5 张图片。
 
 ## 发布
 
@@ -33,9 +40,9 @@ Pull Request 只构建测试，不部署。原 `Valibra` 代码仓库继续保�
 
 ## 更新规则
 
-1. 修改 `site/content/` 中两种语言对应章节。
-2. 汇总数据变更时先更新版本文档，再更新网站叙述；构建会从 JSON 生成成绩表和指标。
+1. 中文更新以 Notion 当前原文为准，更新 `site/content/zh.notion.md` 并核对差异；不要让摘要生成器覆盖正文。源快照 SHA 测试需要在复核后同步更新。
+2. 中文所有数据表保留 Notion 原文，不用 JSON 重新计算或替换。`core_results.json` 仍供既有俄语摘要使用。
 3. 运行测试，检查桌面和移动端预览，并审查发布目录中每一个文件。
 4. 仅提交本次审阅过的文件。不要复制整个 `baseline/` 或 `research-runtime/` 到站点。
 
-图中文字：编辑 `site/assets/framework-zh.svg` / `framework-ru.svg` 中的 `<text>` 内容。文字较长时需要同步调整位置或换行；两种语言分别维护。
+中文页图文以 Notion 为准；图 1 为 `notion-zh-1.svg`，图 2–5 为原始 PNG。俄语摘要图仍为 `framework-ru.svg`。中文 SVG 可以编辑文字，但改变后应同时核对 Notion 母版；PNG 内文字不能像正文一样直接编辑。

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Build an allowlisted, dependency-free bilingual public report.
+"""Build only allowlisted website assets, a Chinese Notion report and Russian summary.
 
-Never walks the repository or imports research runtime code. The only data input
-is the already curated release summary. Notion snapshots/logs are NOT inputs.
+The explicitly imported Chinese page is the source of its full report text.
+Never walks or imports the private research repository or linked evidence files.
 """
 from __future__ import annotations
 
@@ -10,10 +10,16 @@ import argparse
 import html
 import json
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from notion_report import render_chinese
 
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = Path("site/data/core_results.json")
-ASSETS = ("site.css", "site.js", "framework-zh.svg", "framework-ru.svg")
+ASSETS = ("site.css", "site.js", "framework-zh.svg", "framework-ru.svg",
+          "notion-report.css", "notion-report.js", "notion-zh-1.svg",
+          "notion-zh-2.png", "notion-zh-3.png", "notion-zh-4.png", "notion-zh-5.png")
 DATA_KEYS = {
     "schema_version", "evaluation", "model", "execution_profile", "scores",
     "paired_changes", "status_transitions", "reported_token_usage",
@@ -84,6 +90,8 @@ def load_data(root: Path = ROOT) -> dict:
 
 
 def render(language: str, data: dict) -> str:
+    if language == "zh":
+        return render_chinese()
     ui = LANG[language]
     prefix = "../" if language == "ru" else ""
     b, c = data["scores"]["baseline"], data["scores"]["candidate"]

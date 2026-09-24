@@ -1,0 +1,29 @@
+{
+  "source_url": "https://app.notion.com/p/3e3c6fba6efe80828c18d9b4ca6961e9",
+  "page_last_edited_at": "2026-09-24T09:17:22.902Z",
+  "fetched_on": "2026-09-24",
+  "connector_truncated": true,
+  "unknown_block_ids": [
+    "3e3c6fba-6efe-8086-848c-d4c1d55a0bc8"
+  ],
+  "image_files": [
+    "notion-zh-1.svg",
+    "notion-zh-2.png",
+    "notion-zh-3.png",
+    "notion-zh-4.png",
+    "notion-zh-5.png"
+  ],
+  "attachments": [
+    {
+      "name": "glm52_full600_baseline_score_table.xlsx",
+      "url": "https://app.notion.com/p/3e3c6fba6efe80828c18d9b4ca6961e9#3e3c6fba6efe806d8e23ead248baff6c",
+      "status": "not_downloadable_via_connector"
+    },
+    {
+      "name": "current_candidate_full600_baseline_format.xlsx",
+      "url": "https://app.notion.com/p/3e3c6fba6efe80828c18d9b4ca6961e9#3e3c6fba6efe8006b4ead03fbbafbb27",
+      "status": "not_downloadable_via_connector"
+    }
+  ],
+  "policy": "Preserve all readable page content verbatim. Localize image URLs. Keep inaccessible objects and attachments as labeled Notion links. Do not copy linked repository directories."
+}

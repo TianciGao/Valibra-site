@@ -1,0 +1,2 @@
+# Preserve original SQL/code whitespace in the verbatim Notion snapshot.
+site/content/zh.notion.md whitespace=-blank-at-eol

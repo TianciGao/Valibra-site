@@ -1,4 +1,4 @@
-"""Offline checks for the intentionally small public publishing boundary."""
+"""Offline checks for explicit publishing scope and faithful report conversion."""
 import importlib.util
 import json
 from html.parser import HTMLParser
@@ -41,11 +41,11 @@ class PublicSiteTests(unittest.TestCase):
         self.files = site.build(self.output)
 
     def test_exact_publish_allowlist(self):
-        expected = {"index.html", "ru/index.html", ".nojekyll", "assets/core_results.json",
-                    "assets/site.css", "assets/site.js", "assets/framework-zh.svg", "assets/framework-ru.svg"}
+        expected = {"index.html", "ru/index.html", ".nojekyll", "assets/core_results.json"}
+        expected.update("assets/" + name for name in site.ASSETS)
         actual = {p.relative_to(self.output).as_posix() for p in self.output.rglob("*") if p.is_file()}
         self.assertEqual(actual, expected)
-        self.assertEqual(len(self.files), 8)
+        self.assertEqual(len(self.files), 15)
 
     def test_local_links_and_anchors_under_project_prefix(self):
         for page in (self.output / "index.html", self.output / "ru/index.html"):
@@ -54,7 +54,7 @@ class PublicSiteTests(unittest.TestCase):
             for link in document.links:
                 parsed = urlsplit(link)
                 if parsed.scheme:
-                    self.assertEqual(parsed.scheme, "https")
+                    self.assertIn(parsed.scheme, ("https", "http"))
                     continue
                 self.assertFalse(parsed.netloc)
                 self.assertFalse(parsed.path.startswith("/"), link)
@@ -68,11 +68,12 @@ class PublicSiteTests(unittest.TestCase):
         for language, path in (("zh", "index.html"), ("ru", "ru/index.html")):
             text = (self.output / path).read_text()
             document = Document(text)
-            for section in ("overview", "architecture", "cases", "results", "limitations", "resources"):
+            sections = ("overview", "architecture", "cases", "results", "evidence") if language == "zh" else ("overview", "architecture", "cases", "results", "limitations", "resources")
+            for section in sections:
                 self.assertIn(section, document.ids)
-            self.assertEqual(text.count('<details class="case"'), 3)
+            self.assertEqual(text.count('<details '), 50 if language == "zh" else 3)
             self.assertNotIn("{{", text)
-            self.assertIn(f'assets/framework-{language}.svg', text)
+            self.assertIn('assets/notion-zh-1.svg' if language == "zh" else 'assets/framework-ru.svg', text)
             if language == "ru":
                 self.assertFalse(re.search(r"[\u4e00-\u9fff]", "".join(document.text).replace("中文", "")))
 
@@ -88,11 +89,15 @@ class PublicSiteTests(unittest.TestCase):
         self.assertEqual(counts["primary_full_pass"] + counts["fallback_new_full"], 75)
         self.assertEqual(sum(row["count"] for row in data["status_transitions"]), 600)
 
-    def test_no_internal_payloads_or_credentials(self):
-        prohibited = (r"/home/user/", r"app\.notion\.com", r"research-runtime/", r"data:image/",
+    def test_no_credentials_or_temporary_signed_urls(self):
+        # User explicitly requested the report's SQL/state records verbatim.
+        # Its original citations and local paths are text, not copied directories.
+        prohibited = (r"data:image/", r"X-Amz-", r"file://",
                       r"gh[pousr]_[A-Za-z0-9]{20,}", r"github_pat_[A-Za-z0-9_]{20,}",
-                      r"sk-[A-Za-z0-9]{20,}", r"BEGIN .*PRIVATE KEY", r"(?i)SELECT\s+.+\s+FROM\s+")
-        for path in self.files:
+                      r"sk-[A-Za-z0-9]{20,}", r"BEGIN .*PRIVATE KEY")
+        for path in self.files + [ROOT / "site/content/zh.notion.md"]:
+            if path.suffix == ".png":
+                continue
             text = path.read_text()
             for pattern in prohibited:
                 self.assertIsNone(re.search(pattern, text), f"{path}: {pattern}")
