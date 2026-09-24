@@ -1,109 +1,111 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1220" viewBox="0 0 1160 1220" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="2380" viewBox="0 0 1200 2380" role="img" aria-labelledby="title desc">
   <title id="title">Четырёхкомпонентная подготовка, Check, Gate и восстановление</title>
   <desc id="desc">Обычный Check передаёт управление Gate после завершения или при отсутствии следующего инструмента. Дополнительные запросы выполняются до повторного Check. Main получает только проверенное состояние. Переработка ведётся в черновике с откатом при неудаче; независимое восстановление возможно при выполнении условий бюджета.</desc>
-  <defs>
-    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#52616d"/></marker>
-  </defs>
+  <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#60756c"/></marker></defs>
   <style>
-    text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#26313d;font-size:20px}
-    .title{font-size:26px;font-weight:700}.bold{font-weight:700}.small{font-size:18px}.note{font-size:18px;fill:#52616d}
-    .box{fill:#f4f6f8;stroke:#83919c;stroke-width:1.5;rx:8}.plain{fill:white;stroke:#83919c;stroke-width:1.5;rx:8}
-    .edge{fill:none;stroke:#52616d;stroke-width:2;marker-end:url(#arrow)}
+    text{font-family:"DejaVu Sans",Arial,sans-serif;font-size:20px;fill:#30453c}
+    .title{font-size:28px;font-weight:700;fill:#173e35}
+    .heading{font-size:22px;font-weight:700;fill:#173e35}
+    .muted{fill:#50665a}
+    .card{fill:#fff;stroke:#bfcec5;stroke-width:1.5;rx:12}
+    .tinted{fill:#f3f7f4}
+    .edge{fill:none;stroke:#60756c;stroke-width:2;stroke-linejoin:round;marker-end:url(#arrow)}
   </style>
-  <rect width="1160" height="1220" fill="white"/>
-  <text x="40" y="37" class="title" style="font-size:25.50px;font-family:DejaVu Sans,sans-serif">Общий процесс: проверить и собрать сведения, затем написать SQL</text>
-
-  <rect class="box" x="295" y="63" width="570" height="68"/>
-  <text x="580" y="93" text-anchor="middle" class="bold" style="font-size:15.67px;font-family:DejaVu Sans,sans-serif">Исходный запрос / уточнение P2 после успешного P1</text>
-  <text x="580" y="117" text-anchor="middle" class="small" style="font-size:14.80px;font-family:DejaVu Sans,sans-serif">Уточнения хранятся отдельно и доступны следующим этапам</text>
-  <path class="edge" d="M580 131 V166"/>
-
-  <rect class="box" x="55" y="166" width="1050" height="160"/>
-  <text x="80" y="199" class="bold" style="font-size:20.00px;font-family:DejaVu Sans,sans-serif">Подготовка: последовательное формирование четырёх компонентов</text>
-  <text x="85" y="236" style="font-size:16.00px;font-family:DejaVu Sans,sans-serif">Structure: таблицы и связи</text>
-  <text x="410" y="236" style="font-size:16.69px;font-family:DejaVu Sans,sans-serif">Mapping: фразы запроса → поля</text>
-  <text x="795" y="236" style="font-size:16.01px;font-family:DejaVu Sans,sans-serif">Knowledge: бизнес-определения</text>
-  <path class="edge" d="M332 230 H390"/>
-  <path class="edge" d="M723 230 H777"/>
-  <text x="85" y="268" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">schema / DDL</text>
-  <text x="410" y="268" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">Описания полей / JSON-пути</text>
-  <text x="795" y="268" class="small" style="font-size:14.69px;font-family:DejaVu Sans,sans-serif">Официальные правила и формулы</text>
-  <text x="85" y="306" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">4 компонента: tables · join_keys · column_mapping · domain_knowledge</text>
-  <path class="edge" d="M580 326 V374"/>
-
-  <rect class="box" x="335" y="374" width="445" height="85"/>
-  <text x="558" y="407" text-anchor="middle" class="bold" style="font-size:15.63px;font-family:DejaVu Sans,sans-serif">Check: достаточно ли сведений для SQL?</text>
-  <text x="558" y="438" text-anchor="middle" class="small" style="font-size:13.98px;font-family:DejaVu Sans,sans-serif">Поля, формулы, фильтры, требования к результату</text>
-
-  <rect class="plain" x="887" y="374" width="218" height="128"/>
-  <text x="904" y="404" class="bold" style="font-size:9.58px;font-family:DejaVu Sans,sans-serif">Один дополнительный запрос</text>
-  <text x="904" y="434" class="small" style="font-size:7.96px;font-family:DejaVu Sans,sans-serif">Поле / правило / SQL только для чтения</text>
-  <text x="904" y="462" class="small" style="font-size:10.37px;font-family:DejaVu Sans,sans-serif">или уточнение у пользователя</text>
-  <text x="904" y="489" class="small" style="font-size:11.24px;font-family:DejaVu Sans,sans-serif">Выполнить после валидации</text>
-  <path class="edge" d="M780 417 H887"/>
-  <text x="790" y="385" class="small" style="font-size:12.39px;font-family:DejaVu Sans,sans-serif">Не завершён</text>
-  <text x="790" y="405" class="small" style="font-size:9.64px;font-family:DejaVu Sans,sans-serif">есть инструмент</text>
-  <path class="edge" d="M996 374 V347 H724 V374"/>
-  <text x="798" y="339" class="small" style="font-size:16.48px;font-family:DejaVu Sans,sans-serif">Новый результат → снова Check</text>
-
-  <path class="edge" d="M558 459 V550"/>
-  <text x="572" y="495" class="bold" style="font-size:11.66px;font-family:DejaVu Sans,sans-serif">Завершён / нет следующего инструмента</text>
-  <text x="572" y="524" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">complete или next_tool = null</text>
-
-  <rect class="box" x="335" y="550" width="445" height="112"/>
-  <text x="558" y="583" text-anchor="middle" class="bold" style="font-size:13.43px;font-family:DejaVu Sans,sans-serif">Gate: нужны ли изменения по новым сведениям?</text>
-  <text x="558" y="615" text-anchor="middle" class="small" style="font-size:11.15px;font-family:DejaVu Sans,sans-serif">4 компонента, результат и пробелы Check, уточнения, сведения</text>
-  <text x="558" y="643" text-anchor="middle" class="small" style="font-size:11.04px;font-family:DejaVu Sans,sans-serif">Определяет область переработки; не подменяет решение Check</text>
-
-  <path class="edge" d="M558 662 V703 H200 V755"/>
-  <path class="edge" d="M558 662 V703 H580 V755"/>
-  <path class="edge" d="M558 662 V703 H960 V755"/>
-  <text x="55" y="737" class="small" style="font-size:14.84px;font-family:DejaVu Sans,sans-serif">Без переработки + Check завершён</text>
-  <text x="432" y="737" class="small" style="font-size:14.13px;font-family:DejaVu Sans,sans-serif">Переработать поля или набор таблиц</text>
-  <text x="801" y="737" class="small" style="font-size:10.28px;font-family:DejaVu Sans,sans-serif">Завершить / без переработки, но Check не завершён</text>
-
-  <rect class="plain" x="45" y="755" width="310" height="170"/>
-  <text x="65" y="788" class="bold" style="font-size:20.00px;font-family:DejaVu Sans,sans-serif">Обычный Main</text>
-  <text x="65" y="821" class="small" style="font-size:10.53px;font-family:DejaVu Sans,sans-serif">Запрос + сводка 4 компонентов + уточнения</text>
-  <text x="65" y="851" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">execute_sql / submit_sql</text>
-  <text x="65" y="881" class="small" style="font-size:9.57px;font-family:DejaVu Sans,sans-serif">Написать, выполнить, исправить, отправить SQL</text>
-  <text x="65" y="911" class="small" style="font-size:9.56px;font-family:DejaVu Sans,sans-serif">Задача не решена → завершить основной процесс</text>
-
-  <rect class="box" x="425" y="755" width="310" height="170"/>
-  <text x="445" y="788" class="bold" style="font-size:9.93px;font-family:DejaVu Sans,sans-serif">Временный черновик: переработка → Check</text>
-  <text x="445" y="821" class="small" style="font-size:17.50px;font-family:DejaVu Sans,sans-serif">Поля: Mapping → Knowledge</text>
-  <text x="445" y="851" class="small" style="font-size:9.14px;font-family:DejaVu Sans,sans-serif">Набор таблиц: сначала Structure, затем эти два шага</text>
-  <text x="445" y="881" class="small" style="font-size:17.11px;font-family:DejaVu Sans,sans-serif">В конце — Check черновика</text>
-  <text x="445" y="911" class="small" style="font-size:9.75px;font-family:DejaVu Sans,sans-serif">До фиксации официальные сведения неизменны</text>
-
-  <rect class="plain" x="805" y="755" width="310" height="170"/>
-  <text x="825" y="788" class="bold" style="font-size:14.90px;font-family:DejaVu Sans,sans-serif">Завершить основной процесс</text>
-  <text x="825" y="821" class="small" style="font-size:15.33px;font-family:DejaVu Sans,sans-serif">Не передавать непроверенные</text>
-  <text x="825" y="851" class="small" style="font-size:17.50px;font-family:DejaVu Sans,sans-serif">результаты обычному Main</text>
-  <text x="825" y="881" class="small" style="font-size:11.44px;font-family:DejaVu Sans,sans-serif">Валидация инструмента / лимит бюджета</text>
-  <text x="825" y="911" class="small" style="font-size:10.23px;font-family:DejaVu Sans,sans-serif">также могут привести к этому выходу раньше</text>
-
-  <path class="edge" d="M200 925 V980"/>
-  <rect class="plain" x="45" y="980" width="285" height="142"/>
-  <text x="65" y="1013" class="bold" style="font-size:10.49px;font-family:DejaVu Sans,sans-serif">Официальная оценка и смена этапов</text>
-  <text x="65" y="1047" class="small" style="font-size:12.81px;font-family:DejaVu Sans,sans-serif">P1 пройден → получить запрос P2</text>
-  <text x="65" y="1077" class="small" style="font-size:13.15px;font-family:DejaVu Sans,sans-serif">P2 пройден → задача завершена</text>
-  <text x="65" y="1107" class="small" style="font-size:9.73px;font-family:DejaVu Sans,sans-serif">Неудача не означает успех восстановления</text>
-
-  <path class="edge" d="M580 925 V980"/>
-  <rect class="plain" x="370" y="980" width="400" height="187"/>
-  <text x="390" y="1013" class="bold" style="font-size:20.00px;font-family:DejaVu Sans,sans-serif">Выходы Check черновика</text>
-  <text x="390" y="1047" class="small" style="font-size:12.82px;font-family:DejaVu Sans,sans-serif">Пройден: валидация и фиксация → обычный Main</text>
-  <text x="390" y="1077" class="small" style="font-size:11.85px;font-family:DejaVu Sans,sans-serif">Не завершён: допустимый доп. запрос → снова Check</text>
-  <text x="390" y="1107" class="small" style="font-size:10.51px;font-family:DejaVu Sans,sans-serif">Продолжение невозможно: отбросить → завершить процесс</text>
-  <text x="390" y="1137" class="small" style="font-size:9.81px;font-family:DejaVu Sans,sans-serif">Нужен вопрос: отбросить, спросить, новый черновик через Gate</text>
-
-  <path class="edge" d="M960 925 V980"/>
-  <rect class="box" x="805" y="980" width="310" height="217"/>
-  <text x="825" y="1013" class="bold" style="font-size:9.91px;font-family:DejaVu Sans,sans-serif">Внешняя проверка условий восстановления</text>
-  <text x="825" y="1047" class="small" style="font-size:11.88px;font-family:DejaVu Sans,sans-serif">Функция включена + задача не решена</text>
-  <text x="825" y="1077" class="small" style="font-size:9.71px;font-family:DejaVu Sans,sans-serif">Остаток ≥ 3 Coin + восстановления ещё не было</text>
-  <text x="825" y="1107" class="small" style="font-size:9.48px;font-family:DejaVu Sans,sans-serif">Да: отдельный исходный Agent, все инструменты</text>
-  <text x="825" y="1137" class="small" style="font-size:13.47px;font-family:DejaVu Sans,sans-serif">Нет: вернуть имеющийся результат</text>
-  <text x="825" y="1177" class="small" style="font-size:9.14px;font-family:DejaVu Sans,sans-serif">Без сброса бюджета и возврата в основной процесс</text>
+  <rect width="1200" height="2380" fill="#fff"/>
+  <text data-label="0" x="40" y="54" class="title"><tspan x="40" dy="0">Общий процесс: проверить и собрать сведения, затем </tspan><tspan x="40" dy="38">написать SQL</tspan></text>
+  <g data-node="request"><rect class="card tinted" x="240" y="122" width="720" height="156"/>
+  <text data-label="1" x="264" y="159" class="heading"><tspan x="264" dy="0">Исходный запрос / уточнение P2 </tspan><tspan x="264" dy="28">после успешного P1</tspan></text>
+  <text data-label="2" x="264" y="233"><tspan x="264" dy="0">Уточнения хранятся отдельно и доступны следующим этапам</tspan></text>
+  </g>
+  <path class="edge" d="M600 278 V300"/>
+  <g data-node="preparation"><rect class="card tinted" x="40" y="300" width="1120" height="260"/>
+  <text data-label="3" x="64" y="342" class="heading"><tspan x="64" dy="0">Подготовка: последовательное формирование четырёх компонентов</tspan></text>
+  <text data-label="4" x="64" y="405"><tspan x="64" dy="0">Structure: таблицы и </tspan><tspan x="64" dy="28">связи</tspan></text>
+  <text data-label="5" x="442" y="405"><tspan x="442" dy="0">Mapping: фразы запроса → </tspan><tspan x="442" dy="28">поля</tspan></text>
+  <text data-label="6" x="820" y="405"><tspan x="820" dy="0">Knowledge: </tspan><tspan x="820" dy="28">бизнес-определения</tspan></text>
+  <path class="edge" d="M377 411 H415"/>
+  <path class="edge" d="M755 411 H793"/>
+  <text data-label="7" x="64" y="475" class="muted"><tspan x="64" dy="0">schema / DDL</tspan></text>
+  <text data-label="8" x="442" y="475" class="muted"><tspan x="442" dy="0">Описания полей / JSON-пути</tspan></text>
+  <text data-label="9" x="820" y="475" class="muted"><tspan x="820" dy="0">Официальные правила и </tspan><tspan x="820" dy="28">формулы</tspan></text>
+  <text data-label="10" x="64" y="538"><tspan x="64" dy="0">4 компонента: tables · join_keys · column_mapping · domain_knowledge</tspan></text>
+  </g>
+  <path class="edge" d="M350 560 V650"/>
+  <g data-node="check"><rect class="card tinted" x="100" y="650" width="500" height="168"/>
+  <text data-label="11" x="124" y="690" class="heading"><tspan x="124" dy="0">Check: достаточно ли сведений </tspan><tspan x="124" dy="28">для SQL?</tspan></text>
+  <text data-label="12" x="124" y="765"><tspan x="124" dy="0">Поля, формулы, фильтры, требования к </tspan><tspan x="124" dy="28">результату</tspan></text>
+  </g>
+  <g data-node="extra-request"><rect class="card" x="810" y="650" width="350" height="310"/>
+  <text data-label="13" x="834" y="690" class="heading"><tspan x="834" dy="0">Один дополнительный </tspan><tspan x="834" dy="28">запрос</tspan></text>
+  <text data-label="14" x="834" y="763"><tspan x="834" dy="0">Поле / правило / SQL </tspan><tspan x="834" dy="28">только для чтения</tspan></text>
+  <text data-label="15" x="834" y="833"><tspan x="834" dy="0">или уточнение у </tspan><tspan x="834" dy="28">пользователя</tspan></text>
+  <text data-label="16" x="834" y="903" class="muted"><tspan x="834" dy="0">Выполнить после </tspan><tspan x="834" dy="28">валидации</tspan></text>
+  </g>
+  <text data-label="17" x="626" y="688"><tspan x="626" dy="0">Не завершён</tspan></text>
+  <text data-label="18" x="626" y="716"><tspan x="626" dy="0">есть инструмент</tspan></text>
+  <path class="edge" d="M600 738 H810"/>
+  <path class="edge" d="M985 650 V610 H500 V650"/>
+  <text data-label="19" x="640" y="594" class="muted"><tspan x="640" dy="0">Новый результат → снова Check</tspan></text>
+  <path class="edge" d="M350 818 V950"/>
+  <text data-label="20" x="374" y="854"><tspan x="374" dy="0">Завершён / нет следующего </tspan><tspan x="374" dy="28">инструмента</tspan></text>
+  <text data-label="21" x="374" y="922"><tspan x="374" dy="0">complete или next_tool = null</tspan></text>
+  <g data-node="gate"><rect class="card tinted" x="100" y="950" width="500" height="228"/>
+  <text data-label="22" x="124" y="990" class="heading"><tspan x="124" dy="0">Gate: нужны ли изменения по </tspan><tspan x="124" dy="28">новым сведениям?</tspan></text>
+  <text data-label="23" x="124" y="1064"><tspan x="124" dy="0">4 компонента, результат и пробелы </tspan><tspan x="124" dy="28">Check, уточнения, сведения</tspan></text>
+  <text data-label="24" x="124" y="1132"><tspan x="124" dy="0">Определяет область переработки; не </tspan><tspan x="124" dy="28">подменяет решение Check</tspan></text>
+  </g>
+  <path class="edge" d="M350 1178 V1214 H215 V1360"/>
+  <path class="edge" d="M350 1178 V1214 H600 V1360"/>
+  <path class="edge" d="M350 1178 V1214 H985 V1360"/>
+  <rect x="40" y="1238" width="350" height="100" fill="#fff"/>
+  <text data-label="25" x="56" y="1268"><tspan x="56" dy="0">Без переработки + Check </tspan><tspan x="56" dy="28">завершён</tspan></text>
+  <rect x="425" y="1238" width="350" height="100" fill="#fff"/>
+  <text data-label="26" x="441" y="1268"><tspan x="441" dy="0">Переработать поля или набор </tspan><tspan x="441" dy="28">таблиц</tspan></text>
+  <rect x="810" y="1238" width="350" height="100" fill="#fff"/>
+  <text data-label="27" x="826" y="1268"><tspan x="826" dy="0">Завершить / без переработки, </tspan><tspan x="826" dy="28">но Check не завершён</tspan></text>
+  <g data-node="main"><rect class="card" x="40" y="1360" width="350" height="364"/>
+  <text data-label="28" x="64" y="1400" class="heading"><tspan x="64" dy="0">Обычный Main</tspan></text>
+  <text data-label="29" x="64" y="1454"><tspan x="64" dy="0">Запрос + сводка 4 </tspan><tspan x="64" dy="28">компонентов + уточнения</tspan></text>
+  <text data-label="30" x="64" y="1526"><tspan x="64" dy="0">execute_sql / submit_sql</tspan></text>
+  <text data-label="31" x="64" y="1578"><tspan x="64" dy="0">Написать, выполнить, </tspan><tspan x="64" dy="28">исправить, отправить SQL</tspan></text>
+  <text data-label="32" x="64" y="1652"><tspan x="64" dy="0">Задача не решена → </tspan><tspan x="64" dy="28">завершить основной </tspan><tspan x="64" dy="28">процесс</tspan></text>
+  </g>
+  <g data-node="draft"><rect class="card tinted" x="425" y="1360" width="350" height="364"/>
+  <text data-label="33" x="449" y="1400" class="heading"><tspan x="449" dy="0">Временный черновик: </tspan><tspan x="449" dy="28">переработка → Check</tspan></text>
+  <text data-label="34" x="449" y="1476"><tspan x="449" dy="0">Поля: Mapping → Knowledge</tspan></text>
+  <text data-label="35" x="449" y="1526"><tspan x="449" dy="0">Набор таблиц: сначала </tspan><tspan x="449" dy="28">Structure, затем эти два </tspan><tspan x="449" dy="28">шага</tspan></text>
+  <text data-label="36" x="449" y="1620"><tspan x="449" dy="0">В конце — Check черновика</tspan></text>
+  <text data-label="37" x="449" y="1674"><tspan x="449" dy="0">До фиксации официальные </tspan><tspan x="449" dy="28">сведения неизменны</tspan></text>
+  </g>
+  <g data-node="stop"><rect class="card" x="810" y="1360" width="350" height="364"/>
+  <text data-label="38" x="834" y="1400" class="heading"><tspan x="834" dy="0">Завершить основной </tspan><tspan x="834" dy="28">процесс</tspan></text>
+  <text data-label="39" x="834" y="1476"><tspan x="834" dy="0">Не передавать </tspan><tspan x="834" dy="28">непроверенные</tspan></text>
+  <text data-label="40" x="834" y="1532"><tspan x="834" dy="0">результаты обычному Main</tspan></text>
+  <text data-label="41" x="834" y="1588"><tspan x="834" dy="0">Валидация инструмента / </tspan><tspan x="834" dy="28">лимит бюджета</tspan></text>
+  <text data-label="42" x="834" y="1664"><tspan x="834" dy="0">также могут привести к </tspan><tspan x="834" dy="28">этому выходу раньше</tspan></text>
+  </g>
+  <path class="edge" d="M215 1724 V1790"/>
+  <path class="edge" d="M600 1724 V1790"/>
+  <path class="edge" d="M985 1724 V1790"/>
+  <g data-node="evaluation"><rect class="card" x="40" y="1790" width="350" height="420"/>
+  <text data-label="43" x="64" y="1830" class="heading"><tspan x="64" dy="0">Официальная оценка и </tspan><tspan x="64" dy="28">смена этапов</tspan></text>
+  <text data-label="44" x="64" y="1906"><tspan x="64" dy="0">P1 пройден → получить </tspan><tspan x="64" dy="28">запрос P2</tspan></text>
+  <text data-label="45" x="64" y="1980"><tspan x="64" dy="0">P2 пройден → задача </tspan><tspan x="64" dy="28">завершена</tspan></text>
+  <text data-label="46" x="64" y="2054"><tspan x="64" dy="0">Неудача не означает успех </tspan><tspan x="64" dy="28">восстановления</tspan></text>
+  </g>
+  <g data-node="draft-exits"><rect class="card" x="425" y="1790" width="350" height="550"/>
+  <text data-label="47" x="449" y="1830" class="heading"><tspan x="449" dy="0">Выходы Check </tspan><tspan x="449" dy="28">черновика</tspan></text>
+  <text data-label="48" x="449" y="1900"><tspan x="449" dy="0">Пройден: валидация и </tspan><tspan x="449" dy="28">фиксация → обычный Main</tspan></text>
+  <text data-label="49" x="449" y="1976"><tspan x="449" dy="0">Не завершён: допустимый </tspan><tspan x="449" dy="28">доп. запрос → снова Check</tspan></text>
+  <text data-label="50" x="449" y="2066"><tspan x="449" dy="0">Продолжение невозможно: </tspan><tspan x="449" dy="28">отбросить → завершить </tspan><tspan x="449" dy="28">процесс</tspan></text>
+  <text data-label="51" x="449" y="2174"><tspan x="449" dy="0">Нужен вопрос: отбросить, </tspan><tspan x="449" dy="28">спросить, новый черновик </tspan><tspan x="449" dy="28">через Gate</tspan></text>
+  </g>
+  <g data-node="fallback"><rect class="card tinted" x="810" y="1790" width="350" height="550"/>
+  <text data-label="52" x="834" y="1830" class="heading"><tspan x="834" dy="0">Внешняя проверка </tspan><tspan x="834" dy="28">условий </tspan><tspan x="834" dy="28">восстановления</tspan></text>
+  <text data-label="53" x="834" y="1930"><tspan x="834" dy="0">Функция включена + </tspan><tspan x="834" dy="28">задача не решена</tspan></text>
+  <text data-label="54" x="834" y="2010"><tspan x="834" dy="0">Остаток ≥ 3 Coin + </tspan><tspan x="834" dy="28">восстановления ещё не </tspan><tspan x="834" dy="28">было</tspan></text>
+  <text data-label="55" x="834" y="2110"><tspan x="834" dy="0">Да: отдельный исходный </tspan><tspan x="834" dy="28">Agent, все инструменты</tspan></text>
+  <text data-label="56" x="834" y="2200"><tspan x="834" dy="0">Нет: вернуть имеющийся </tspan><tspan x="834" dy="28">результат</tspan></text>
+  <text data-label="57" x="834" y="2276"><tspan x="834" dy="0">Без сброса бюджета и </tspan><tspan x="834" dy="28">возврата в основной процесс</tspan></text>
+  </g>
 </svg>

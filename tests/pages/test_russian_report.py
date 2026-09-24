@@ -84,6 +84,25 @@ class RussianReportTests(unittest.TestCase):
         self.assertNotIn("<mention-page", page)
         self.assertEqual([x[0] for x in self.zh.nav], [x[0] for x in self.ru.nav])
 
+    def test_architecture_redesign_preserves_every_original_label(self):
+        root = ET.parse(ROOT / "site/assets/notion-ru-1.svg").getroot()
+        texts = root.findall(".//{http://www.w3.org/2000/svg}text")
+        labels = ["".join(node.itertext()) for node in texts]
+        self.assertEqual(len(labels), 58)
+        self.assertEqual([node.get("data-label") for node in texts], [str(i) for i in range(58)])
+        # Frozen from the original published diagram, before layout changes.
+        self.assertEqual(sha256("\n".join(labels).encode()).hexdigest(),
+                         "0a9a03ff1f32696476a35c5262d3bb990ad071f91b8ce23ac95973d2505b88ed")
+
+    def test_architecture_uses_three_consistent_font_sizes(self):
+        root = ET.parse(ROOT / "site/assets/notion-ru-1.svg").getroot()
+        style = root.find("{http://www.w3.org/2000/svg}style").text
+        self.assertEqual(re.findall(r"font-size:\s*(\d+)px", style), ["20", "28", "22"])
+        for node in root.iter():
+            # Long labels must wrap rather than shrink or stretch to fit.
+            for attribute in ("font-size", "textLength", "lengthAdjust", "transform", "style"):
+                self.assertNotIn(attribute, node.attrib)
+
     def test_five_translated_figures_are_self_contained_and_safe(self):
         for i in range(1, 6):
             path = ROOT / f"site/assets/notion-ru-{i}.svg"
