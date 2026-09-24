@@ -4,8 +4,7 @@
   <defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#60756c"/></marker></defs>
   <style>
     text{font-family:"DejaVu Sans",Arial,sans-serif;font-size:20px;fill:#30453c}
-    .title{font-size:28px;font-weight:700;fill:#173e35}
-    .heading{font-size:22px;font-weight:700;fill:#173e35}
+    .title,.heading{font-weight:700;fill:#173e35}
     .muted{fill:#50665a}
     .card{fill:#fff;stroke:#bfcec5;stroke-width:1.5;rx:12}
     .tinted{fill:#f3f7f4}

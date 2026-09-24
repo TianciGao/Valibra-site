@@ -184,6 +184,10 @@ class Report:
             if image:
                 self.counts["images"] += 1
                 url = self.prefix + safe_url(image[2], local=True)
+                if image[2] == "assets/notion-ru-1.svg":
+                    # Refresh cached diagrams whenever the editable SVG changes.
+                    revision = sha256((ROOT / "site" / image[2]).read_bytes()).hexdigest()[:12]
+                    url += f"?v={revision}"
                 caption = f'<figcaption>{rich(image[1])}</figcaption>' if image[1] else ""
                 output.append(f'<figure><a href="{url}" target="_blank" rel="noopener"><img src="{url}" alt="{escape(image[1], quote=True)}" loading="lazy"></a>{caption}</figure>')
                 continue

@@ -94,14 +94,19 @@ class RussianReportTests(unittest.TestCase):
         self.assertEqual(sha256("\n".join(labels).encode()).hexdigest(),
                          "0a9a03ff1f32696476a35c5262d3bb990ad071f91b8ce23ac95973d2505b88ed")
 
-    def test_architecture_uses_three_consistent_font_sizes(self):
+    def test_architecture_uses_one_font_size(self):
         root = ET.parse(ROOT / "site/assets/notion-ru-1.svg").getroot()
         style = root.find("{http://www.w3.org/2000/svg}style").text
-        self.assertEqual(re.findall(r"font-size:\s*(\d+)px", style), ["20", "28", "22"])
+        self.assertEqual(re.findall(r"font-size:\s*(\d+)px", style), ["20"])
         for node in root.iter():
             # Long labels must wrap rather than shrink or stretch to fit.
             for attribute in ("font-size", "textLength", "lengthAdjust", "transform", "style"):
                 self.assertNotIn(attribute, node.attrib)
+
+    def test_architecture_url_changes_with_svg_content(self):
+        revision = sha256((ROOT / "site/assets/notion-ru-1.svg").read_bytes()).hexdigest()[:12]
+        self.assertIn(f'src="../assets/notion-ru-1.svg?v={revision}"', self.ru_body)
+        self.assertIn(f'href="../assets/notion-ru-1.svg?v={revision}"', self.ru_body)
 
     def test_five_translated_figures_are_self_contained_and_safe(self):
         for i in range(1, 6):
