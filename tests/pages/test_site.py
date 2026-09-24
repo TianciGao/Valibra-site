@@ -1,5 +1,6 @@
 """Offline checks for explicit publishing scope and faithful report conversion."""
 import importlib.util
+import base64
 from hashlib import sha256
 import json
 from html.parser import HTMLParser
@@ -48,7 +49,7 @@ class PublicSiteTests(unittest.TestCase):
         expected.update("downloads/" + name for name in site.DOWNLOADS)
         actual = {p.relative_to(self.output).as_posix() for p in self.output.rglob("*") if p.is_file()}
         self.assertEqual(actual, expected)
-        self.assertEqual(len(self.files), 17)
+        self.assertEqual(len(self.files), 22)
 
     def test_local_links_and_anchors_under_project_prefix(self):
         for page in (self.output / "index.html", self.output / "ru/index.html"):
@@ -71,14 +72,18 @@ class PublicSiteTests(unittest.TestCase):
         for language, path in (("zh", "index.html"), ("ru", "ru/index.html")):
             text = (self.output / path).read_text()
             document = Document(text)
-            sections = ("overview", "architecture", "cases", "results", "evidence") if language == "zh" else ("overview", "architecture", "cases", "results", "limitations", "resources")
+            sections = ("overview", "architecture", "cases", "results", "evidence")
             for section in sections:
                 self.assertIn(section, document.ids)
-            self.assertEqual(text.count('<details '), 50 if language == "zh" else 3)
+            self.assertEqual(text.count('<details '), 50)
             self.assertNotIn("{{", text)
-            self.assertIn('assets/notion-zh-1.svg' if language == "zh" else 'assets/framework-ru.svg', text)
+            self.assertIn(f'assets/notion-{language}-1.svg', text)
             if language == "ru":
-                self.assertFalse(re.search(r"[\u4e00-\u9fff]", "".join(document.text).replace("中文", "")))
+                # Original file paths are identifiers, not untranslated prose.
+                visible = "".join(document.text)
+                for label in ("中文", "当前", "600题对照_含完整Token审计.xlsx"):
+                    visible = visible.replace(label, "")
+                self.assertFalse(re.search(r"[\u4e00-\u9fff]", visible))
 
     def test_aggregate_reconciliation(self):
         data = site.load_data()
@@ -98,7 +103,7 @@ class PublicSiteTests(unittest.TestCase):
         prohibited = (r"data:image/", r"X-Amz-", r"file://",
                       r"gh[pousr]_[A-Za-z0-9]{20,}", r"github_pat_[A-Za-z0-9_]{20,}",
                       r"sk-[A-Za-z0-9]{20,}", r"BEGIN .*PRIVATE KEY")
-        for path in self.files + [ROOT / "site/content/zh.notion.md"]:
+        for path in self.files + [ROOT / "site/content/zh.notion.md", ROOT / "site/content/ru.notion.md"]:
             if path.suffix == ".png":
                 continue
             if path.suffix == ".xlsx":
@@ -106,6 +111,13 @@ class PublicSiteTests(unittest.TestCase):
                     text = "\n".join(book.read(name).decode() for name in book.namelist() if name.endswith((".xml", ".rels")))
             else:
                 text = path.read_text()
+            if path.name == "notion-ru-2.svg":
+                # This translated vector overlay contains exactly the reviewed
+                # original screenshot, not an arbitrary new binary payload.
+                embedded = re.findall(r'data:image/png;base64,([A-Za-z0-9+/=]+)', text)
+                self.assertEqual(len(embedded), 1)
+                self.assertEqual(base64.b64decode(embedded[0]), (ROOT / "site/assets/notion-zh-2.png").read_bytes())
+                text = text.replace("data:image/png;base64," + embedded[0], "REVIEWED_SCREENSHOT")
             for pattern in prohibited:
                 self.assertIsNone(re.search(pattern, text), f"{path}: {pattern}")
 

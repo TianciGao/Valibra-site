@@ -1,0 +1,32 @@
+{
+  "translated_on": "2026-09-24",
+  "source_file": "zh.notion.md",
+  "source_sha256": "59c7ec37e2173c7444f7de28c902d5dac4f69be265a530ecc16ef2a4a96a2744",
+  "source_metadata_sha256": "623b8fe68849fc898de5b50321f3bacb98f1026ef1c0cfe0be7a5c2255395b68",
+  "translation_sha256": "e8f1cd66ea1941299af62628fd6b37bd3172461911a886a62acd7fb5c7a4004d",
+  "translated_code_blocks_zero_based": {
+    "37": "Only Chinese inline comments translated; data unchanged.",
+    "39": "Only Chinese inline comment translated; data unchanged.",
+    "87": "Chinese natural-language System Prompt translated; appended original execution context unchanged."
+  },
+  "repository_title": "Репозиторий проекта на GitHub · TianciGao/Valibra",
+  "repository_note": "Репозиторий кода остаётся закрытым; для доступа требуется разрешение.",
+  "attachments": {
+    "glm52_full600_baseline_score_table.xlsx": {
+      "title": "Результаты базовой системы (600 задач)",
+      "note": "Оригинальный Excel-файл автора без изменений: матрица результатов, сведения по каждой задаче и информация о запуске. Названия листов и часть подписей сохранены на китайском."
+    },
+    "current_candidate_full600_baseline_format.xlsx": {
+      "title": "Результаты нашего метода (600 задач)",
+      "note": "Оригинальный Excel-файл автора без изменений, с исходными китайскими подписями. Total Tokens рассчитан по старой методике и не включает независимый Grounding; полный расход приведён в разделе «Проверка расхода токенов»."
+    }
+  },
+  "image_sources": {
+    "notion-zh-1.svg": "836cb95978690b1c7bd3bd49b816c5facb2d09a08d71b00df31b84111b96f9d9",
+    "notion-zh-2.png": "bc2e3fc3fc81c0250fe04bca367297e5aeb3bf9a9fc25e0d6d84abba872ccd7c",
+    "notion-zh-3.png": "55bde310acfa4413d5cccf406a0f9ac55caaa2d8975ff068e920e1dbe882a734",
+    "notion-zh-4.png": "1fd9d6d83a8a55ef3bed59382d2cae802a9e86c3bdf440f2c570a93e66a744a3",
+    "notion-zh-5.png": "3d0ba58ad57d21944b70dd753a5eaffc23fab821364d6e885dcf3858a0dbc493"
+  },
+  "policy": "Full aligned Russian translation, not a summary. SQL, identifiers, numeric values and original English logs remain unchanged. Chinese comments and natural-language prompt are translated at the three explicitly listed code positions. Five translated SVG assets correspond to the five source figures. Excel downloads remain original files. Notion pages are not modified."
+}

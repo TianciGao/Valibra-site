@@ -6,6 +6,7 @@ Any still-unsupported external objects stay visible as labelled source links.
 Code-fence contents are never passed through Markdown or whitespace cleanup.
 """
 from html import escape
+from hashlib import sha256
 from html.parser import HTMLParser
 from pathlib import Path
 import json
@@ -32,7 +33,7 @@ def safe_url(url, local=False):
     parts = urlsplit(url)
     if parts.scheme in ("https", "http") and parts.netloc:
         return escape(url, quote=True)
-    if local and re.fullmatch(r"assets/notion-zh-[1-5]\.(svg|png)", url):
+    if local and re.fullmatch(r"assets/notion-(?:zh-[1-5]\.(?:svg|png)|ru-[1-5]\.svg)", url):
         return url
     if local and url in (
         "downloads/glm52_full600_baseline_score_table.xlsx",
@@ -79,7 +80,11 @@ def plain(source):
 
 
 class Report:
-    def __init__(self, source, metadata=None):
+    def __init__(self, source, metadata=None, language="zh"):
+        if language not in ("zh", "ru"):
+            raise ValueError("Unsupported report language")
+        self.language = language
+        self.prefix = "../" if language == "ru" else ""
         self.source = source
         self.metadata = metadata or {}
         self.lines = source.splitlines()
@@ -178,14 +183,19 @@ class Report:
             image = re.fullmatch(r"!\[([^\]]*)\]\((.*?)\)", line)
             if image:
                 self.counts["images"] += 1
-                url = safe_url(image[2], local=True)
+                url = self.prefix + safe_url(image[2], local=True)
                 caption = f'<figcaption>{rich(image[1])}</figcaption>' if image[1] else ""
                 output.append(f'<figure><a href="{url}" target="_blank" rel="noopener"><img src="{url}" alt="{escape(image[1], quote=True)}" loading="lazy"></a>{caption}</figure>')
                 continue
             page = re.fullmatch(r'<page url="([^"]*)">(.*?)</page>', line)
             if page:
                 label, value = self.record("page", page[2])
-                output.append(f'<p class="notion-page-link"><a {label} href="{safe_url(page[1])}">{value}</a></p>')
+                known_pages = {
+                    "https://app.notion.com/p/3e3c6fba6efe80828c18d9b4ca6961e9": self.prefix + "index.html",
+                    "https://app.notion.com/p/3e5c6fba6efe8039b955c477fbebe2c3": self.prefix + "ru/index.html",
+                }
+                url = known_pages.get(page[1], safe_url(page[1]))
+                output.append(f'<p class="notion-page-link"><a {label} href="{url}">{value}</a></p>')
                 continue
             attachment = re.fullmatch(r'<file src="([^"]*)">(.*?)</file>', line)
             if attachment:
@@ -194,8 +204,9 @@ class Report:
                                  if item["url"] == attachment[1] and item["name"] == attachment[2]
                                  and item.get("status") == "resolved_from_user_desktop"), None)
                 if resolved:
-                    url = safe_url(resolved["local_url"], local=True)
-                    output.append(f'<div class="source-resource attachment-download"><a href="{url}" download="{escape(resolved["name"], quote=True)}">{escape(resolved["title"])} · 下载 Excel ↓</a><small>{escape(resolved["name"])}</small><small>{escape(resolved["note"])}</small></div>')
+                    url = self.prefix + safe_url(resolved["local_url"], local=True)
+                    download_label = "Скачать Excel" if self.language == "ru" else "下载 Excel"
+                    output.append(f'<div class="source-resource attachment-download"><a href="{url}" download="{escape(resolved["name"], quote=True)}">{escape(resolved["title"])} · {download_label} ↓</a><small>{escape(resolved["name"])}</small><small>{escape(resolved["note"])}</small></div>')
                 else:
                     output.append(f'<div class="source-unavailable"><a href="{safe_url(attachment[1])}">{escape(attachment[2])} ↗</a><small>Notion 附件入口；当前连接无法下载该附件，查看可能需要原页面权限。</small></div>')
                 continue
@@ -215,7 +226,8 @@ class Report:
                 level = len(heading[1])
                 content = heading[2]
                 label, value = self.record("heading", content)
-                identifier = {"摘要": "overview", "一、框架设计与实现": "architecture", "二、实际案例分析": "cases", "三、600 题成绩与成本": "results"}.get(content, f"heading-{self.heading_count}")
+                identifier = {"摘要": "overview", "一、框架设计与实现": "architecture", "二、实际案例分析": "cases", "三、600 题成绩与成本": "results",
+                              "Аннотация": "overview", "I. Проектирование и реализация системы": "architecture", "II. Анализ реальных примеров": "cases", "III. Результаты и затраты на 600 задачах": "results"}.get(content, f"heading-{self.heading_count}")
                 if level == 2:
                     self.nav.append((identifier, plain(value)))
                 output.append(f'<h{level} id="{identifier}" {label}>{value}</h{level}>')
@@ -270,10 +282,55 @@ def render_chinese():
 <link rel="stylesheet" href="assets/site.css"><link rel="stylesheet" href="assets/notion-report.css">
 <script src="assets/notion-report.js" defer></script></head><body class="notion-page">
 <a class="skip" href="#main">跳转到正文</a>
-<header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html">Valibra<span>.</span></a><div class="toplinks"><a class="repo-link" href="{source_url}">Notion 原文 ↗</a><nav class="language" aria-label="语言切换"><a href="index.html" lang="zh-CN" aria-current="page">中文</a><a href="ru/index.html" lang="ru" title="俄语页暂为此前的摘要版">Русский</a></nav></div></div></header>
-<div class="layout"><aside class="sidebar"><div class="overline">章节导航</div><nav aria-label="章节导航">{nav}</nav><div class="sidebar-note">中文：Notion 原文迁移<br>俄语：此前摘要版<br><br>本次读取：{escape(metadata['fetched_on'])}<br>不自动同步后续修改。</div></aside>
+<header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html">Valibra<span>.</span></a><div class="toplinks"><a class="repo-link" href="{source_url}">Notion 原文 ↗</a><nav class="language" aria-label="语言切换"><a href="index.html" lang="zh-CN" aria-current="page">中文</a><a href="ru/index.html" lang="ru" title="对应中文全文的俄语译版">Русский</a></nav></div></div></header>
+<div class="layout"><aside class="sidebar"><div class="overline">章节导航</div><nav aria-label="章节导航">{nav}</nav><div class="sidebar-note">中文：Notion 原文迁移<br>俄语：对应全文译版<br><br>本次读取：{escape(metadata['fetched_on'])}<br>不自动同步后续修改。</div></aside>
 <main id="main"><div class="migration-note"><strong>迁移说明（非原文）</strong>：{migration_note}正文中的本地路径仅作原文引用，不代表对应文件已公开。</div>
 <div class="report-controls"><button class="subtle-button" data-report-toggle hidden>展开全部折叠内容</button></div>
 <article class="notion-report">{body}</article>
-<footer class="footer">网站排版与正文分开维护。<a href="{source_url}">查看 Notion 原文</a>；本站未改动 Notion 页面。俄语站尚未同步为原文版。</footer></main></div></body></html>
+<footer class="footer">网站排版与正文分开维护。<a href="{source_url}">查看 Notion 原文</a>；本站未改动 Notion 页面。俄语站为对应全文译版。</footer></main></div></body></html>
+'''
+
+
+def russian_metadata():
+    """Fail closed if the Chinese editorial source changed since translation review."""
+    directory = ROOT / "site/content"
+    translation = json.loads((directory / "ru.notion.json").read_text(encoding="utf-8"))
+    for filename, key in (("zh.notion.md", "source_sha256"),
+                          ("zh.notion.json", "source_metadata_sha256"),
+                          ("ru.notion.md", "translation_sha256")):
+        if sha256((directory / filename).read_bytes()).hexdigest() != translation[key]:
+            raise ValueError(f"Review Russian translation alignment: {filename}")
+    for name, digest in translation["image_sources"].items():
+        if sha256((ROOT / "site/assets" / name).read_bytes()).hexdigest() != digest:
+            raise ValueError(f"Review translated figure alignment: {name}")
+    metadata = json.loads((directory / "zh.notion.json").read_text(encoding="utf-8"))
+    for item in metadata["resolved_embeds"].values():
+        item.update(title=translation["repository_title"], note=translation["repository_note"])
+    for item in metadata["attachments"]:
+        item.update(translation["attachments"][item["name"]])
+    return metadata
+
+
+def render_russian():
+    metadata = russian_metadata()
+    source = (ROOT / "site/content/ru.notion.md").read_text(encoding="utf-8")
+    report = Report(source, metadata, language="ru")
+    body = report.render()
+    if 'class="source-unavailable"' in body:
+        raise ValueError("Russian page still has unresolved source objects")
+    nav = "".join(f'<a href="#{identifier}">{escape(label)}</a>' for identifier, label in report.nav)
+    source_url = safe_url(metadata["source_url"])
+    return f'''<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Полный русский перевод отчёта BIRD-Interact: четырёхкомпонентная система, реальные примеры и результаты оценки.">
+<meta name="referrer" content="strict-origin-when-cross-origin"><title>BIRD-Interact: проектирование четырёхкомпонентной системы и анализ оценки · Valibra</title>
+<link rel="stylesheet" href="../assets/site.css"><link rel="stylesheet" href="../assets/notion-report.css">
+<script src="../assets/notion-report.js" defer></script></head><body class="notion-page">
+<a class="skip" href="#main">Перейти к содержимому</a>
+<header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html">Valibra<span>.</span></a><div class="toplinks"><a class="repo-link" href="{source_url}">Оригинал в Notion ↗</a><nav class="language" aria-label="Выбор языка"><a href="../index.html" lang="zh-CN">中文</a><a href="index.html" lang="ru" aria-current="page">Русский</a></nav></div></div></header>
+<div class="layout"><aside class="sidebar"><div class="overline">Содержание</div><nav aria-label="Содержание">{nav}</nav><div class="sidebar-note">Полный перевод китайского отчёта<br><br>Снимок источника: {escape(metadata['fetched_on'])}<br>Изменения Notion не синхронизируются автоматически.</div></aside>
+<main id="main"><div class="migration-note"><strong>Примечание к переводу (не часть оригинала)</strong>: сохранены порядок разделов, полные примеры, таблицы и вложенные блоки китайской страницы. Тексты схемы и пояснения на иллюстрациях переведены. SQL, технические идентификаторы, числовые значения и исходные англоязычные журналы сохранены; китайские комментарии и текст System Prompt переведены. Две таблицы Excel доступны в исходном виде. Локальные пути в тексте — ссылки на источники, а не опубликованные файлы. <a href="../index.html">Сверить с китайским оригиналом</a>.</div>
+<div class="report-controls"><button class="subtle-button" data-report-toggle hidden>Развернуть все блоки</button></div>
+<article class="notion-report">{body}</article>
+<footer class="footer">Оформление сайта и текст отчёта хранятся отдельно. <a href="{source_url}">Китайский оригинал в Notion</a>. Страницы Notion не изменены; последующие правки требуют отдельной синхронизации перевода.</footer></main></div></body></html>
 '''

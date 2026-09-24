@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1220" viewBox="0 0 1160 1220" role="img" aria-labelledby="title desc">
+  <title id="title">Четырёхкомпонентная подготовка, Check, Gate и восстановление</title>
+  <desc id="desc">Обычный Check передаёт управление Gate после завершения или при отсутствии следующего инструмента. Дополнительные запросы выполняются до повторного Check. Main получает только проверенное состояние. Переработка ведётся в черновике с откатом при неудаче; независимое восстановление возможно при выполнении условий бюджета.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,4 L0,8 Z" fill="#52616d"/></marker>
+  </defs>
+  <style>
+    text{font-family:"Microsoft YaHei","Noto Sans CJK SC",sans-serif;fill:#26313d;font-size:20px}
+    .title{font-size:26px;font-weight:700}.bold{font-weight:700}.small{font-size:18px}.note{font-size:18px;fill:#52616d}
+    .box{fill:#f4f6f8;stroke:#83919c;stroke-width:1.5;rx:8}.plain{fill:white;stroke:#83919c;stroke-width:1.5;rx:8}
+    .edge{fill:none;stroke:#52616d;stroke-width:2;marker-end:url(#arrow)}
+  </style>
+  <rect width="1160" height="1220" fill="white"/>
+  <text x="40" y="37" class="title" style="font-size:25.50px;font-family:DejaVu Sans,sans-serif">Общий процесс: проверить и собрать сведения, затем написать SQL</text>
+
+  <rect class="box" x="295" y="63" width="570" height="68"/>
+  <text x="580" y="93" text-anchor="middle" class="bold" style="font-size:15.67px;font-family:DejaVu Sans,sans-serif">Исходный запрос / уточнение P2 после успешного P1</text>
+  <text x="580" y="117" text-anchor="middle" class="small" style="font-size:14.80px;font-family:DejaVu Sans,sans-serif">Уточнения хранятся отдельно и доступны следующим этапам</text>
+  <path class="edge" d="M580 131 V166"/>
+
+  <rect class="box" x="55" y="166" width="1050" height="160"/>
+  <text x="80" y="199" class="bold" style="font-size:20.00px;font-family:DejaVu Sans,sans-serif">Подготовка: последовательное формирование четырёх компонентов</text>
+  <text x="85" y="236" style="font-size:16.00px;font-family:DejaVu Sans,sans-serif">Structure: таблицы и связи</text>
+  <text x="410" y="236" style="font-size:16.69px;font-family:DejaVu Sans,sans-serif">Mapping: фразы запроса → поля</text>
+  <text x="795" y="236" style="font-size:16.01px;font-family:DejaVu Sans,sans-serif">Knowledge: бизнес-определения</text>
+  <path class="edge" d="M332 230 H390"/>
+  <path class="edge" d="M723 230 H777"/>
+  <text x="85" y="268" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">schema / DDL</text>
+  <text x="410" y="268" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">Описания полей / JSON-пути</text>
+  <text x="795" y="268" class="small" style="font-size:14.69px;font-family:DejaVu Sans,sans-serif">Официальные правила и формулы</text>
+  <text x="85" y="306" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">4 компонента: tables · join_keys · column_mapping · domain_knowledge</text>
+  <path class="edge" d="M580 326 V374"/>
+
+  <rect class="box" x="335" y="374" width="445" height="85"/>
+  <text x="558" y="407" text-anchor="middle" class="bold" style="font-size:15.63px;font-family:DejaVu Sans,sans-serif">Check: достаточно ли сведений для SQL?</text>
+  <text x="558" y="438" text-anchor="middle" class="small" style="font-size:13.98px;font-family:DejaVu Sans,sans-serif">Поля, формулы, фильтры, требования к результату</text>
+
+  <rect class="plain" x="887" y="374" width="218" height="128"/>
+  <text x="904" y="404" class="bold" style="font-size:9.58px;font-family:DejaVu Sans,sans-serif">Один дополнительный запрос</text>
+  <text x="904" y="434" class="small" style="font-size:7.96px;font-family:DejaVu Sans,sans-serif">Поле / правило / SQL только для чтения</text>
+  <text x="904" y="462" class="small" style="font-size:10.37px;font-family:DejaVu Sans,sans-serif">или уточнение у пользователя</text>
+  <text x="904" y="489" class="small" style="font-size:11.24px;font-family:DejaVu Sans,sans-serif">Выполнить после валидации</text>
+  <path class="edge" d="M780 417 H887"/>
+  <text x="790" y="385" class="small" style="font-size:12.39px;font-family:DejaVu Sans,sans-serif">Не завершён</text>
+  <text x="790" y="405" class="small" style="font-size:9.64px;font-family:DejaVu Sans,sans-serif">есть инструмент</text>
+  <path class="edge" d="M996 374 V347 H724 V374"/>
+  <text x="798" y="339" class="small" style="font-size:16.48px;font-family:DejaVu Sans,sans-serif">Новый результат → снова Check</text>
+
+  <path class="edge" d="M558 459 V550"/>
+  <text x="572" y="495" class="bold" style="font-size:11.66px;font-family:DejaVu Sans,sans-serif">Завершён / нет следующего инструмента</text>
+  <text x="572" y="524" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">complete или next_tool = null</text>
+
+  <rect class="box" x="335" y="550" width="445" height="112"/>
+  <text x="558" y="583" text-anchor="middle" class="bold" style="font-size:13.43px;font-family:DejaVu Sans,sans-serif">Gate: нужны ли изменения по новым сведениям?</text>
+  <text x="558" y="615" text-anchor="middle" class="small" style="font-size:11.15px;font-family:DejaVu Sans,sans-serif">4 компонента, результат и пробелы Check, уточнения, сведения</text>
+  <text x="558" y="643" text-anchor="middle" class="small" style="font-size:11.04px;font-family:DejaVu Sans,sans-serif">Определяет область переработки; не подменяет решение Check</text>
+
+  <path class="edge" d="M558 662 V703 H200 V755"/>
+  <path class="edge" d="M558 662 V703 H580 V755"/>
+  <path class="edge" d="M558 662 V703 H960 V755"/>
+  <text x="55" y="737" class="small" style="font-size:14.84px;font-family:DejaVu Sans,sans-serif">Без переработки + Check завершён</text>
+  <text x="432" y="737" class="small" style="font-size:14.13px;font-family:DejaVu Sans,sans-serif">Переработать поля или набор таблиц</text>
+  <text x="801" y="737" class="small" style="font-size:10.28px;font-family:DejaVu Sans,sans-serif">Завершить / без переработки, но Check не завершён</text>
+
+  <rect class="plain" x="45" y="755" width="310" height="170"/>
+  <text x="65" y="788" class="bold" style="font-size:20.00px;font-family:DejaVu Sans,sans-serif">Обычный Main</text>
+  <text x="65" y="821" class="small" style="font-size:10.53px;font-family:DejaVu Sans,sans-serif">Запрос + сводка 4 компонентов + уточнения</text>
+  <text x="65" y="851" class="small" style="font-size:18.00px;font-family:DejaVu Sans,sans-serif">execute_sql / submit_sql</text>
+  <text x="65" y="881" class="small" style="font-size:9.57px;font-family:DejaVu Sans,sans-serif">Написать, выполнить, исправить, отправить SQL</text>
+  <text x="65" y="911" class="small" style="font-size:9.56px;font-family:DejaVu Sans,sans-serif">Задача не решена → завершить основной процесс</text>
+
+  <rect class="box" x="425" y="755" width="310" height="170"/>
+  <text x="445" y="788" class="bold" style="font-size:9.93px;font-family:DejaVu Sans,sans-serif">Временный черновик: переработка → Check</text>
+  <text x="445" y="821" class="small" style="font-size:17.50px;font-family:DejaVu Sans,sans-serif">Поля: Mapping → Knowledge</text>
+  <text x="445" y="851" class="small" style="font-size:9.14px;font-family:DejaVu Sans,sans-serif">Набор таблиц: сначала Structure, затем эти два шага</text>
+  <text x="445" y="881" class="small" style="font-size:17.11px;font-family:DejaVu Sans,sans-serif">В конце — Check черновика</text>
+  <text x="445" y="911" class="small" style="font-size:9.75px;font-family:DejaVu Sans,sans-serif">До фиксации официальные сведения неизменны</text>
+
+  <rect class="plain" x="805" y="755" width="310" height="170"/>
+  <text x="825" y="788" class="bold" style="font-size:14.90px;font-family:DejaVu Sans,sans-serif">Завершить основной процесс</text>
+  <text x="825" y="821" class="small" style="font-size:15.33px;font-family:DejaVu Sans,sans-serif">Не передавать непроверенные</text>
+  <text x="825" y="851" class="small" style="font-size:17.50px;font-family:DejaVu Sans,sans-serif">результаты обычному Main</text>
+  <text x="825" y="881" class="small" style="font-size:11.44px;font-family:DejaVu Sans,sans-serif">Валидация инструмента / лимит бюджета</text>
+  <text x="825" y="911" class="small" style="font-size:10.23px;font-family:DejaVu Sans,sans-serif">также могут привести к этому выходу раньше</text>
+
+  <path class="edge" d="M200 925 V980"/>
+  <rect class="plain" x="45" y="980" width="285" height="142"/>
+  <text x="65" y="1013" class="bold" style="font-size:10.49px;font-family:DejaVu Sans,sans-serif">Официальная оценка и смена этапов</text>
+  <text x="65" y="1047" class="small" style="font-size:12.81px;font-family:DejaVu Sans,sans-serif">P1 пройден → получить запрос P2</text>
+  <text x="65" y="1077" class="small" style="font-size:13.15px;font-family:DejaVu Sans,sans-serif">P2 пройден → задача завершена</text>
+  <text x="65" y="1107" class="small" style="font-size:9.73px;font-family:DejaVu Sans,sans-serif">Неудача не означает успех восстановления</text>
+
+  <path class="edge" d="M580 925 V980"/>
+  <rect class="plain" x="370" y="980" width="400" height="187"/>
+  <text x="390" y="1013" class="bold" style="font-size:20.00px;font-family:DejaVu Sans,sans-serif">Выходы Check черновика</text>
+  <text x="390" y="1047" class="small" style="font-size:12.82px;font-family:DejaVu Sans,sans-serif">Пройден: валидация и фиксация → обычный Main</text>
+  <text x="390" y="1077" class="small" style="font-size:11.85px;font-family:DejaVu Sans,sans-serif">Не завершён: допустимый доп. запрос → снова Check</text>
+  <text x="390" y="1107" class="small" style="font-size:10.51px;font-family:DejaVu Sans,sans-serif">Продолжение невозможно: отбросить → завершить процесс</text>
+  <text x="390" y="1137" class="small" style="font-size:9.81px;font-family:DejaVu Sans,sans-serif">Нужен вопрос: отбросить, спросить, новый черновик через Gate</text>
+
+  <path class="edge" d="M960 925 V980"/>
+  <rect class="box" x="805" y="980" width="310" height="217"/>
+  <text x="825" y="1013" class="bold" style="font-size:9.91px;font-family:DejaVu Sans,sans-serif">Внешняя проверка условий восстановления</text>
+  <text x="825" y="1047" class="small" style="font-size:11.88px;font-family:DejaVu Sans,sans-serif">Функция включена + задача не решена</text>
+  <text x="825" y="1077" class="small" style="font-size:9.71px;font-family:DejaVu Sans,sans-serif">Остаток ≥ 3 Coin + восстановления ещё не было</text>
+  <text x="825" y="1107" class="small" style="font-size:9.48px;font-family:DejaVu Sans,sans-serif">Да: отдельный исходный Agent, все инструменты</text>
+  <text x="825" y="1137" class="small" style="font-size:13.47px;font-family:DejaVu Sans,sans-serif">Нет: вернуть имеющийся результат</text>
+  <text x="825" y="1177" class="small" style="font-size:9.14px;font-family:DejaVu Sans,sans-serif">Без сброса бюджета и возврата в основной процесс</text>
+</svg>

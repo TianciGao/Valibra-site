@@ -1,10 +1,13 @@
 "use strict";
 const reportToggles = [...document.querySelectorAll(".notion-report details")];
 const reportButton = document.querySelector("[data-report-toggle]");
+const reportLabels = document.documentElement.lang === "ru"
+  ? { expand: "Развернуть все блоки", collapse: "Свернуть все блоки" }
+  : { expand: "展开全部折叠内容", collapse: "收起全部折叠内容" };
 const syncReportButton = () => {
   if (!reportButton) return;
   const allOpen = reportToggles.every(item => item.open);
-  reportButton.textContent = allOpen ? "收起全部折叠内容" : "展开全部折叠内容";
+  reportButton.textContent = allOpen ? reportLabels.collapse : reportLabels.expand;
   reportButton.setAttribute("aria-expanded", String(allOpen));
 };
 if (reportButton) {
