@@ -101,7 +101,10 @@ class PublicSiteTests(unittest.TestCase):
         forbidden = ("迁移说明", "本次读取", "不自动同步", "Примечание к переводу",
                      "Снимок источника", "синхронизируются автоматически",
                      'class="migration-note"', 'class="sidebar-note"',
-                     'class="notion-page-link"', '<footer')
+                     'class="notion-page-link"', '<footer',
+                     "桌面原始 Excel 文件", "保留成绩矩阵、逐题明细和运行信息",
+                     "Оригинальный Excel-файл автора", "Названия листов и часть подписей",
+                     "с исходными китайскими подписями", "<small></small>")
         for filename in ("index.html", "ru/index.html"):
             text = (self.output / filename).read_text()
             for phrase in forbidden:

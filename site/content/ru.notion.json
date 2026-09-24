@@ -2,7 +2,7 @@
   "translated_on": "2026-09-24",
   "source_file": "zh.notion.md",
   "source_sha256": "59c7ec37e2173c7444f7de28c902d5dac4f69be265a530ecc16ef2a4a96a2744",
-  "source_metadata_sha256": "623b8fe68849fc898de5b50321f3bacb98f1026ef1c0cfe0be7a5c2255395b68",
+  "source_metadata_sha256": "f490020bfcc621c3efbe8fe563cfcad73df7f8ae8db2e343c9bb553fff90d5f3",
   "translation_sha256": "e8f1cd66ea1941299af62628fd6b37bd3172461911a886a62acd7fb5c7a4004d",
   "translated_code_blocks_zero_based": {
     "37": "Only Chinese inline comments translated; data unchanged.",
@@ -14,11 +14,11 @@
   "attachments": {
     "glm52_full600_baseline_score_table.xlsx": {
       "title": "Результаты базовой системы (600 задач)",
-      "note": "Оригинальный Excel-файл автора без изменений: матрица результатов, сведения по каждой задаче и информация о запуске. Названия листов и часть подписей сохранены на китайском."
+      "note": ""
     },
     "current_candidate_full600_baseline_format.xlsx": {
       "title": "Результаты нашего метода (600 задач)",
-      "note": "Оригинальный Excel-файл автора без изменений, с исходными китайскими подписями. Total Tokens рассчитан по старой методике и не включает независимый Grounding; полный расход приведён в разделе «Проверка расхода токенов»."
+      "note": "Total Tokens рассчитан по старой методике и не включает независимый Grounding; полный расход приведён в разделе «Проверка расхода токенов»."
     }
   },
   "image_sources": {

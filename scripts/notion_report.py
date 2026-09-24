@@ -201,7 +201,8 @@ class Report:
                 if resolved:
                     url = self.prefix + safe_url(resolved["local_url"], local=True)
                     download_label = "Скачать Excel" if self.language == "ru" else "下载 Excel"
-                    output.append(f'<div class="source-resource attachment-download"><a href="{url}" download="{escape(resolved["name"], quote=True)}">{escape(resolved["title"])} · {download_label} ↓</a><small>{escape(resolved["name"])}</small><small>{escape(resolved["note"])}</small></div>')
+                    note = f'<small>{escape(resolved["note"])}</small>' if resolved.get("note") else ""
+                    output.append(f'<div class="source-resource attachment-download"><a href="{url}" download="{escape(resolved["name"], quote=True)}">{escape(resolved["title"])} · {download_label} ↓</a><small>{escape(resolved["name"])}</small>{note}</div>')
                 else:
                     output.append(f'<div class="source-unavailable"><a href="{safe_url(attachment[1])}">{escape(attachment[2])} ↗</a><small>Notion 附件入口；当前连接无法下载该附件，查看可能需要原页面权限。</small></div>')
                 continue

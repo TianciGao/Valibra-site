@@ -31,7 +31,7 @@
       "title": "基线结果表（600 题）",
       "sha256": "77bf272e823fd48ac3cb13b31ef94210b0262bf628980d1d3aded2698c750d7d",
       "bytes": 108765,
-      "note": "桌面原始 Excel 文件，保留成绩矩阵、逐题明细和运行信息。"
+      "note": ""
     },
     {
       "name": "current_candidate_full600_baseline_format.xlsx",
@@ -41,7 +41,7 @@
       "title": "我们方法的结果表（600 题）",
       "sha256": "b0cd982047b833531080b6bfbe0707d208b395da74cccef22228168875f61497",
       "bytes": 109305,
-      "note": "桌面原始 Excel 文件，内容未改动。表内 Total Tokens 为旧汇总口径，未包含独立 Grounding 用量；完整用量见正文“Token 用量复核”。"
+      "note": "表内 Total Tokens 为旧汇总口径，未包含独立 Grounding 用量；完整用量见正文“Token 用量复核”。"
     }
   ],
   "policy": "Preserve the imported Markdown snapshot verbatim. Render the previously unknown embed using the user-confirmed GitHub link. Publish only the two explicitly identified desktop Excel files byte-for-byte. Keep the original Notion references for provenance. Do not copy linked repository directories."
