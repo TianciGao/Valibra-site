@@ -9,12 +9,13 @@
 ## 内容边界
 
 - `site/content/zh.notion.md`：中文 Notion 原文快照（2026-09-24 读取），正文、案例、SQL、模型响应及状态记录按原文保留；只将图片地址本地化、附件内部引用换成对应 Notion 入口。
-- `site/content/zh.notion.json`：来源和已知迁移限制。接口标记 `truncated=true`，有 1 个不可读取的嵌入对象；2 个 Excel 附件只保留原入口。网站明确标注这些限制，不宣称所有对象均已完整迁移。
+- `site/content/zh.notion.json`：来源与对象映射。保留首次读取时的 `truncated=true` 记录；当时的 1 个未知嵌入对象已由作者确认为私有项目仓库 `TianciGao/Valibra`，2 个 Excel 附件已从作者桌面原样补齐。原文快照未改写，渲染时在原位置接入链接与下载入口。
+- `site/downloads/`：仅含作者指定的基线和我们方法的两份 Full600 Excel。构建校验文件大小和 SHA-256，保证原样发布。我们方法表内 Total Tokens 为旧汇总口径，未含独立 Grounding 用量；下载入口已注明，完整用量见正文。
 - `scripts/notion_report.py`：转换标题、彩色文字、提示框、表格、嵌套折叠和代码块，不调用模型重写内容。
 - `site/content/ru.html`：此前俄语摘要，本次未改写或重新翻译。
 - `site/assets/notion-zh-*`：从本次中文 Notion 页下载的 5 张原图，没有重新绘制或翻译；CSS、JavaScript 均本地提供。
 - 核心结果来源：`site/data/core_results.json`，摘自 2026-09-16 版本汇总。
-- 只公开该页面正文已包含的材料；不根据其中的文件路径递归复制私有仓库、完整日志目录、数据集、数据库或附件包。路径文字仅是原文引用。
+- 只公开该页面正文已包含的材料及作者指定的上述两份结果表；不根据其中的文件路径递归复制私有仓库、完整日志目录、数据集、数据库或其他附件包。路径文字仅是原文引用。
 - 不保存或发布凭据、Notion Token、图片签名下载参数。
 - Notion 保持编辑母版。以后重新读取并核对差异，再手工更新网站；本次没有修改 Notion 页面。
 

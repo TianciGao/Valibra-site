@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import html
 import json
+from hashlib import sha256
 from pathlib import Path
 import sys
 
@@ -20,6 +21,7 @@ RELEASE = Path("site/data/core_results.json")
 ASSETS = ("site.css", "site.js", "framework-zh.svg", "framework-ru.svg",
           "notion-report.css", "notion-report.js", "notion-zh-1.svg",
           "notion-zh-2.png", "notion-zh-3.png", "notion-zh-4.png", "notion-zh-5.png")
+DOWNLOADS = ("glm52_full600_baseline_score_table.xlsx", "current_candidate_full600_baseline_format.xlsx")
 DATA_KEYS = {
     "schema_version", "evaluation", "model", "execution_profile", "scores",
     "paired_changes", "status_transitions", "reported_token_usage",
@@ -144,12 +146,21 @@ def render(language: str, data: dict) -> str:
 
 def build(output: Path) -> list[Path]:
     data = load_data()
+    metadata = json.loads((ROOT / "site/content/zh.notion.json").read_text(encoding="utf-8"))
+    downloads = {}
+    for name in DOWNLOADS:
+        item = next(entry for entry in metadata["attachments"] if entry["name"] == name)
+        payload = (ROOT / "site/downloads" / name).read_bytes()
+        if sha256(payload).hexdigest() != item["sha256"] or len(payload) != item["bytes"]:
+            raise ValueError(f"Attachment differs from reviewed desktop original: {name}")
+        downloads[name] = payload
     if output.is_symlink():
         raise ValueError("Output directory must not be a symlink")
     output = output.resolve()
     # Existing unexpected files are never silently uploaded or recursively removed.
     allowed = {"index.html", "ru/index.html", ".nojekyll", "assets/core_results.json"}
     allowed.update(f"assets/{name}" for name in ASSETS)
+    allowed.update(f"downloads/{name}" for name in DOWNLOADS)
     if output.exists():
         for path in output.rglob("*"):
             if path.is_symlink() or (path.is_file() and path.relative_to(output).as_posix() not in allowed):
@@ -162,6 +173,8 @@ def build(output: Path) -> list[Path]:
     (output / "assets/core_results.json").write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     for name in ASSETS:
         (output / "assets" / name).write_bytes((ROOT / "site/assets" / name).read_bytes())
+    for name, payload in downloads.items():
+        (output / "downloads" / name).write_bytes(payload)
     return [output / rel for rel in sorted(allowed)]
 
 

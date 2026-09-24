@@ -2,6 +2,7 @@
 from hashlib import sha256
 from html.parser import HTMLParser
 from pathlib import Path
+import json
 import re
 import sys
 import unittest
@@ -50,7 +51,8 @@ class NotionReportTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.source = (ROOT / "site/content/zh.notion.md").read_text()
-        cls.report = Report(cls.source)
+        cls.metadata = json.loads((ROOT / "site/content/zh.notion.json").read_text())
+        cls.report = Report(cls.source, cls.metadata)
         cls.body = cls.report.render()
         cls.dom = Extract(cls.body)
 
@@ -103,10 +105,18 @@ class NotionReportTests(unittest.TestCase):
         page = render_chinese()
         self.assertEqual(self.report.counts["unknown"], 1)
         self.assertEqual(self.report.counts["attachments"], 2)
-        self.assertEqual(self.body.count('class="source-unavailable"'), 3)
-        self.assertIn("接口将此页面标记为不完整", page)
+        self.assertNotIn('class="source-unavailable"', self.body)
+        self.assertNotIn("接口将此页面标记为不完整", page)
+        self.assertIn('href="https://github.com/TianciGao/Valibra"', self.body)
+        self.assertIn("代码仓库保持私有", self.body)
+        self.assertEqual(self.body.count(' download="'), 2)
+        self.assertIn("未包含独立 Grounding 用量", self.body)
         self.assertIn("glm52_full600_baseline_score_table.xlsx", self.body)
         self.assertIn("current_candidate_full600_baseline_format.xlsx", self.body)
+
+    def test_missing_resolutions_keep_original_entry_points(self):
+        body = Report(self.source).render()
+        self.assertEqual(body.count('class="source-unavailable"'), 3)
 
     def test_imported_html_cannot_execute(self):
         unsafe = rich('Text <script>alert(1)</script> <span color="red" onclick="alert(1)">x</span> [x](javascript:alert(1))')

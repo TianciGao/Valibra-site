@@ -1,7 +1,8 @@
 """Render the supported Notion export blocks without summarising their contents.
 
 The Markdown snapshot is the editorial source, not a prompt for rewriting.
-Unsupported external objects stay visible as explicitly labelled source links.
+User-confirmed object mappings resolve imported links without rewriting the snapshot.
+Any still-unsupported external objects stay visible as labelled source links.
 Code-fence contents are never passed through Markdown or whitespace cleanup.
 """
 from html import escape
@@ -32,6 +33,11 @@ def safe_url(url, local=False):
     if parts.scheme in ("https", "http") and parts.netloc:
         return escape(url, quote=True)
     if local and re.fullmatch(r"assets/notion-zh-[1-5]\.(svg|png)", url):
+        return url
+    if local and url in (
+        "downloads/glm52_full600_baseline_score_table.xlsx",
+        "downloads/current_candidate_full600_baseline_format.xlsx",
+    ):
         return url
     raise ValueError("Unsupported URL scheme or image path")
 
@@ -73,8 +79,9 @@ def plain(source):
 
 
 class Report:
-    def __init__(self, source):
+    def __init__(self, source, metadata=None):
         self.source = source
+        self.metadata = metadata or {}
         self.lines = source.splitlines()
         self.records = []
         self.nav = []
@@ -183,11 +190,24 @@ class Report:
             attachment = re.fullmatch(r'<file src="([^"]*)">(.*?)</file>', line)
             if attachment:
                 self.counts["attachments"] += 1
-                output.append(f'<div class="source-unavailable"><a href="{safe_url(attachment[1])}">{escape(attachment[2])} ↗</a><small>Notion 附件入口；当前连接无法下载该附件，查看可能需要原页面权限。</small></div>')
+                resolved = next((item for item in self.metadata.get("attachments", [])
+                                 if item["url"] == attachment[1] and item["name"] == attachment[2]
+                                 and item.get("status") == "resolved_from_user_desktop"), None)
+                if resolved:
+                    url = safe_url(resolved["local_url"], local=True)
+                    output.append(f'<div class="source-resource attachment-download"><a href="{url}" download="{escape(resolved["name"], quote=True)}">{escape(resolved["title"])} · 下载 Excel ↓</a><small>{escape(resolved["name"])}</small><small>{escape(resolved["note"])}</small></div>')
+                else:
+                    output.append(f'<div class="source-unavailable"><a href="{safe_url(attachment[1])}">{escape(attachment[2])} ↗</a><small>Notion 附件入口；当前连接无法下载该附件，查看可能需要原页面权限。</small></div>')
                 continue
             if line.startswith("<unknown "):
                 self.counts["unknown"] += 1
-                output.append(f'<div class="source-unavailable"><a href="{safe_url(attrs(line)["url"])}">在 Notion 查看此嵌入块 ↗</a><small>此对象不受当前连接支持，未转换为网页内容；原位置与入口已保留。</small></div>')
+                source_url = attrs(line)["url"]
+                block_id = urlsplit(source_url).fragment.replace("-", "")
+                resolved = self.metadata.get("resolved_embeds", {}).get(block_id)
+                if resolved:
+                    output.append(f'<div class="source-resource repository-link"><a href="{safe_url(resolved["url"])}">{escape(resolved["title"])} ↗</a><small>{escape(resolved["note"])}</small></div>')
+                else:
+                    output.append(f'<div class="source-unavailable"><a href="{safe_url(source_url)}">在 Notion 查看此嵌入块 ↗</a><small>此对象不受当前连接支持，未转换为网页内容；原位置与入口已保留。</small></div>')
                 continue
             heading = re.fullmatch(r"(#{1,4}) (.*)", line)
             if heading:
@@ -234,9 +254,13 @@ class Report:
 
 def render_chinese():
     source = (ROOT / "site/content/zh.notion.md").read_text(encoding="utf-8")
-    report = Report(source)
-    body = report.render()
     metadata = json.loads((ROOT / "site/content/zh.notion.json").read_text(encoding="utf-8"))
+    report = Report(source, metadata)
+    body = report.render()
+    if 'class="source-unavailable"' in body:
+        migration_note = "以下保留 Notion 可读取的原文与结构。仍有未能转换的对象，已在原位置注明并保留入口。"
+    else:
+        migration_note = "以下保留 Notion 原文与结构；GitHub 链接及两份桌面 Excel 已按作者补充接入。"
     nav = "".join(f'<a href="#{identifier}">{escape(label)}</a>' for identifier, label in report.nav)
     source_url = safe_url(metadata["source_url"])
     return f'''<!doctype html>
@@ -248,7 +272,7 @@ def render_chinese():
 <a class="skip" href="#main">跳转到正文</a>
 <header class="topbar"><div class="topbar-inner"><a class="brand" href="index.html">Valibra<span>.</span></a><div class="toplinks"><a class="repo-link" href="{source_url}">Notion 原文 ↗</a><nav class="language" aria-label="语言切换"><a href="index.html" lang="zh-CN" aria-current="page">中文</a><a href="ru/index.html" lang="ru" title="俄语页暂为此前的摘要版">Русский</a></nav></div></div></header>
 <div class="layout"><aside class="sidebar"><div class="overline">章节导航</div><nav aria-label="章节导航">{nav}</nav><div class="sidebar-note">中文：Notion 原文迁移<br>俄语：此前摘要版<br><br>本次读取：{escape(metadata['fetched_on'])}<br>不自动同步后续修改。</div></aside>
-<main id="main"><div class="migration-note"><strong>迁移说明（非原文）</strong>：以下按 Notion 当前可读取内容保留原文与结构。1 个嵌入对象、2 个 Excel 附件暂保留原入口；接口将此页面标记为不完整，不能据此宣称所有对象均已迁移。正文中的本地路径仅作原文引用，不代表对应文件已公开。</div>
+<main id="main"><div class="migration-note"><strong>迁移说明（非原文）</strong>：{migration_note}正文中的本地路径仅作原文引用，不代表对应文件已公开。</div>
 <div class="report-controls"><button class="subtle-button" data-report-toggle hidden>展开全部折叠内容</button></div>
 <article class="notion-report">{body}</article>
 <footer class="footer">网站排版与正文分开维护。<a href="{source_url}">查看 Notion 原文</a>；本站未改动 Notion 页面。俄语站尚未同步为原文版。</footer></main></div></body></html>

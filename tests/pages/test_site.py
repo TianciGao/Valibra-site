@@ -1,11 +1,13 @@
 """Offline checks for explicit publishing scope and faithful report conversion."""
 import importlib.util
+from hashlib import sha256
 import json
 from html.parser import HTMLParser
 from pathlib import Path
 import re
 import tempfile
 import unittest
+import zipfile
 from urllib.parse import unquote, urlsplit
 import xml.etree.ElementTree as ET
 
@@ -43,9 +45,10 @@ class PublicSiteTests(unittest.TestCase):
     def test_exact_publish_allowlist(self):
         expected = {"index.html", "ru/index.html", ".nojekyll", "assets/core_results.json"}
         expected.update("assets/" + name for name in site.ASSETS)
+        expected.update("downloads/" + name for name in site.DOWNLOADS)
         actual = {p.relative_to(self.output).as_posix() for p in self.output.rglob("*") if p.is_file()}
         self.assertEqual(actual, expected)
-        self.assertEqual(len(self.files), 15)
+        self.assertEqual(len(self.files), 17)
 
     def test_local_links_and_anchors_under_project_prefix(self):
         for page in (self.output / "index.html", self.output / "ru/index.html"):
@@ -98,9 +101,31 @@ class PublicSiteTests(unittest.TestCase):
         for path in self.files + [ROOT / "site/content/zh.notion.md"]:
             if path.suffix == ".png":
                 continue
-            text = path.read_text()
+            if path.suffix == ".xlsx":
+                with zipfile.ZipFile(path) as book:
+                    text = "\n".join(book.read(name).decode() for name in book.namelist() if name.endswith((".xml", ".rels")))
+            else:
+                text = path.read_text()
             for pattern in prohibited:
                 self.assertIsNone(re.search(pattern, text), f"{path}: {pattern}")
+
+    def test_downloads_preserve_reviewed_desktop_workbooks(self):
+        reviewed = {
+            "glm52_full600_baseline_score_table.xlsx": "77bf272e823fd48ac3cb13b31ef94210b0262bf628980d1d3aded2698c750d7d",
+            "current_candidate_full600_baseline_format.xlsx": "b0cd982047b833531080b6bfbe0707d208b395da74cccef22228168875f61497",
+        }
+        metadata = json.loads((ROOT / "site/content/zh.notion.json").read_text())
+        for item in metadata["attachments"]:
+            path = self.output / item["local_url"]
+            data = path.read_bytes()
+            self.assertEqual(sha256(data).hexdigest(), reviewed[item["name"]])
+            self.assertEqual(data, (ROOT / "site/downloads" / item["name"]).read_bytes())
+            self.assertEqual(len(data), item["bytes"])
+            with zipfile.ZipFile(path) as book:
+                self.assertFalse(any(re.search(r"externalLinks|vbaProject|embeddings|connections", name) for name in book.namelist()))
+                detail = ET.fromstring(book.read("xl/worksheets/sheet2.xml"))
+                ns = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
+                self.assertEqual(len(detail.findall("m:sheetData/m:row", ns)), 601)
 
     def test_svg_is_local_vector_with_translated_text(self):
         for language in ("zh", "ru"):
